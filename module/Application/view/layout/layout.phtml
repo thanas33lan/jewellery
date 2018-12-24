@@ -225,12 +225,11 @@ $tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href="
     <script type="text/javascript">
 
     $(document).ready(function() {
-      <?php if(isset($alertContainer->alertMsg) && $alertContainer->alertMsg != "") {
-        ?>
-          alert("<?php $alertContainer->alertMsg; ?>"); <?php $alertContainer->alertMsg = "";
+      <?php if(isset($alertContainer->alertMsg) && $alertContainer->alertMsg != "") { ?>
+          alert("<?php echo $alertContainer->alertMsg; ?>"); 
+          <?php $alertContainer->alertMsg = "";
           unset($alertContainer->alertMsg);
-        }
-      ?>
+      }?>
     });
     $(function () {
       str=$(location).attr('pathname');

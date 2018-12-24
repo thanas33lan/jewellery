@@ -35,8 +35,9 @@ class UserTable
         $logincontainer->name = $row->name;
         $logincontainer->userName = ucwords($row->username);
         if (isset($logincontainer->userId) && trim($logincontainer->userId) != ''){
-            return '/accounts';
+            return '/';
         }else{
+            $alertContainer->alertMsg = 'Your username and password invalid!';
             return '/login';
         }
     }

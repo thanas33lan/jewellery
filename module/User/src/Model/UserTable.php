@@ -136,16 +136,16 @@ class UserTable
         return $output;
     }
     
-    public function getUser($userId)
+    public function getUser($id)
     {
-        $id = (int) $id;
+        $userId = (int) $id;
         $rowset = $this->tableGateway->select(['user_id' => $userId]);
         $row = $rowset->current();
+        
+        $alertContainer = new Container('alert');
         if (! $row) {
-            throw new RuntimeException(sprintf(
-                'Could not find row with identifier %d',
-                $id
-            ));
+            $alertContainer->alertMsg = 'User not found';
+            return 0;
         }
 
         return $row;
@@ -153,40 +153,33 @@ class UserTable
 
     public function saveUser($user)
     {
-        $config = new \Zend\Config\Reader\Ini();
-        $configResult = $config->fromFile('config/custom.config.ini');
-        $password = sha1($user->password . $configResult["password"]["salt"]);
         $data = [
-            'role_id' => $user->type,
+            'role_id'  => $user->role_id,
             'name'  => $user->name,
-            'username'  => $user->email,
-            'password'  => $user->$password,
+            'username'  => $user->username,
+            'password'  => $user->password,
             'phone'  => $user->phone,
-            'user_dob'  => $user->dob,
+            'user_dob'  => $user->user_dob,
             'state'  => $user->state,
             'city'  => $user->city,
             'address'  => $user->address,
             'pincode'  => $user->pincode,
-            'user_status'  => $user->usertatus,
+            'user_status' => $user->user_status
         ];
-
-        $userId = (int) $user->accountId;
+        $userId = (int) $user->user_id;
 
         if ($userId === 0) {
-            $this->tableGateway->insert($data);
+            $inserted = $this->tableGateway->insert($data);
             return;
         }
+        $alertContainer = new Container('alert');
+        $updated = $this->tableGateway->update($data, ['user_id' => $userId]);
 
-        try {
-            $this->getUser($userId);
-        } catch (RuntimeException $e) {
-            throw new RuntimeException(sprintf(
-                'Cannot update User with identifier %d; does not exist',
-                $id
-            ));
+        if($inserted > 0 || $updated > 0){
+            $alertContainer->alertMsg = 'User details saved successfully';
+        }else{
+            $alertContainer->alertMsg = 'User details not saved';
         }
-
-        $this->tableGateway->update($data, ['user_id' => $userId]);
     }
 
     public function deleteUser($userId)

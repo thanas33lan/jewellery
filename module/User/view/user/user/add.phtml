@@ -1,8 +1,3 @@
-<?php
-use Zend\Session\Container;
-$sessionLogin = new Container('user');
-// \Zend\Debug\Debug::dump($userResult);die;
-?>
 <div class="bg-body-light">
      <div class="content content-full">
           <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
@@ -27,9 +22,9 @@ $sessionLogin = new Container('user');
             <div class="col-md-12 table-responsive" id="hide">
                 <form name="userInformation" id="userInformation"  class="mb-5" action="<?= $this->url('user', array('action' => 'add')); ?>" method="post">
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="role">Select Role<span class="mandatory">*</span></label>
+                        <label class="col-sm-2 col-form-label" for="role_id">Select Role<span class="mandatory">*</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control isRequired" id="role" name="role" title="Please select the role">
+                            <select class="form-control isRequired" id="role_id" name="role_id" title="Please select the role">
                                 <option value="">--select--</option>
                                 <?php foreach($roles as $role){?>
                                     <option value="<?php echo $role->role_id;?>"><?php echo ucwords($role->role_name);?></option>
@@ -44,9 +39,9 @@ $sessionLogin = new Container('user');
                     </div>
                     
                     <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="email">Email<span class="mandatory">*</span></label>
+                        <label class="col-sm-2 col-form-label" for="username">Email<span class="mandatory">*</span></label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control isRequired" id="email" name="email" placeholder="Enter the email" title="Please enter the email">
+                            <input type="text" class="form-control isRequired" id="username" name="username" placeholder="Enter the email" title="Please enter the email">
                         </div>
                         
                         <label class="col-sm-2 col-form-label" for="password">Password<span class="mandatory">*</span></label>
@@ -73,28 +68,28 @@ $sessionLogin = new Container('user');
                             <input type="number" class="form-control isRequired" id="pincode" name="pincode" placeholder="Enter the pincode" title="Please enter the pincode">
                         </div>
                         
-                        <label class="col-sm-2 col-form-label" for="usertatus">Status<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <select class="form-control isRequired" id="usertatus" name="usertatus" title="Please select the status">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="dob">DOB<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                        <input type="text" class="js-datepicker form-control" id="dob" name="dob" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the dob" title="Please enter the dob" readonly="readonly">
-                        </div>
-
                         <label class="col-sm-2 col-form-label" for="state">Select state<span class="mandatory">*</span></label>
                         <div class="col-sm-4">
                             <select class="form-control isRequired" id="state" name="state" title="Please select the state">
                                 <option value="">--select--</option>
                                 <?php foreach($states as $state){?>
                                     <option value="<?php echo $state->state_id;?>"><?php echo ucwords($state->state_name);?></option>
-                                <?php }?>
+                                    <?php }?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="user_dob">DOB<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="js-datepicker form-control" id="user_dob" name="user_dob" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the dob" title="Please enter the dob" readonly="readonly">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="user_status">Status<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="user_status" name="user_status" title="Please select the status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
                             </select>
                         </div>
                     </div>

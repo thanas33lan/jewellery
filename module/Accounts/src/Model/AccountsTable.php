@@ -132,11 +132,11 @@ class AccountsTable
         $id = (int) $id;
         $rowset = $this->tableGateway->select(['account_id' => $accountId]);
         $row = $rowset->current();
+        
+        $alertContainer = new Container('alert');
         if (! $row) {
-            throw new RuntimeException(sprintf(
-                'Could not find row with identifier %d',
-                $id
-            ));
+            $alertContainer->alertMsg = 'User not found';
+            return 0;
         }
 
         return $row;
@@ -160,20 +160,17 @@ class AccountsTable
         $accountId = (int) $accounts->accountId;
 
         if ($accountId === 0) {
-            $this->tableGateway->insert($data);
+            $inserted = $this->tableGateway->insert($data);
             return;
         }
 
-        try {
-            $this->getAccounts($accountId);
-        } catch (RuntimeException $e) {
-            throw new RuntimeException(sprintf(
-                'Cannot update Accounts with identifier %d; does not exist',
-                $accountId
-            ));
+        $alertContainer = new Container('alert');
+        $updated = $this->tableGateway->update($data, ['account_id' => $accountId]);
+        if($inserted > 0 || $updated > 0){
+            $alertContainer->alertMsg = 'User details saved successfully';
+        }else{
+            $alertContainer->alertMsg = 'User details not saved';
         }
-
-        $this->tableGateway->update($data, ['account_id' => $accountId]);
     }
 
     public function deleteAccounts($accountId)

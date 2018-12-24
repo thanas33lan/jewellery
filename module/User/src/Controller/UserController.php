@@ -48,9 +48,16 @@ class UserController extends AbstractActionController
             return $this->redirect()->toUrl("/user");
         }
         $id = base64_decode($this->params()->fromRoute('id'));
-        return new ViewModel([
-            'user' => $this->table->getUser($id)
-        ]);
+        $checkId = $this->table->getUser($id);
+        if(isset($checkId)){
+            return new ViewModel([
+                'roles' => $this->table->fetchAllRoles(),
+                'states' => $this->table->fetchAllState(),
+                'user' => $this->table->getUser($id)
+            ]);
+        }else{
+            return $this->redirect()->toUrl("/user");
+        }
     }
     
     public function deleteAction()
