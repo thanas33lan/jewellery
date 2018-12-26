@@ -84,6 +84,7 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Products\\' => 9,
         ),
         'L' => 
         array (
@@ -304,6 +305,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
+        ),
+        'Products\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Products/src',
         ),
         'Login\\' => 
         array (

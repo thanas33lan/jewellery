@@ -1,15 +1,14 @@
 <?php
-    use Zend\Session\Container;
-    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
 ?>
 <div class="bg-body-light">
     <div class="content content-full">
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">User Details</h1>
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Products Details</h1>
             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="<?php echo $this->url('user',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New User</a>
+                        <a href="<?php echo $this->url('products',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Products</a>
                     </li>
                 </ol>
             </nav>
@@ -22,20 +21,21 @@
             
         </div>
         <div class="block-content block-content-full">
-            <table id="userDataTable" class="table table-bordered table-striped table-vcenter">
+            <table id="productsDataTable" class="table table-bordered table-striped table-vcenter">
                 <thead>
                     <tr>
-                        <th>Role</th>
+                        <th>Type</th>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Status</th>
+                        <th>Wastage</th>
+                        <th>Rate</th>
+                        <th>Vat</th>
+                        <th>Qty</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="6" class="dataTables_empty">Loading data from server</td>
+                        <td colspan="7" class="dataTables_empty">Loading data from server</td>
                     </tr>
                 </tbody>
             </table>
@@ -47,14 +47,14 @@
     /* Table initialisation */
    oTable = null;
     $(document).ready(function() {
-        oTable = $('#userDataTable').dataTable( {
+        oTable = $('#productsDataTable').dataTable( {
             "bAutoWidth": false,
             "bProcessing": true,
             "bServerSide": true,
             "aoColumns": [
                     <?= $editAction;?>
             ],
-            "sAjaxSource": "<?= $this->url('user',array('action' => 'index')); ?>",
+            "sAjaxSource": "<?= $this->url('products',array('action' => 'index')); ?>",
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',
@@ -67,16 +67,16 @@
         } );
     } );
 
-    function deleteUser(id){
-        conf=confirm("Are you sure, you want delete this user!");
+    function deleteAccount(id){
+        conf=confirm("Are you sure, you want delete this account!");
 		if(conf){
-			$.post("<?php echo $this->url('user',array('action'=>'delete')); ?>",{user_id:id},
+			$.post("<?php echo $this->url('products',array('action'=>'delete')); ?>",{products_id:id},
 			function(data){
 				if(data>0){
 					oTable.fnDraw();
-					alert("User deleted successfully.");
+					alert("Account deleted successfully.");
 				}else{
-					alert("User not deleted!",'err');
+					alert("Account not deleted!",'err');
                 }
 			});
 		}

@@ -27,8 +27,9 @@
                         <div class="col-sm-4">
                             <select class="form-control isRequired" id="type" name="type" placeholder="Enter the account type" title="Please enter the account type">
                                 <option value="">--select--</option>
-                                <option value="balance-sheet" <?php echo($accounts->account_type == 'balance-sheet' )?'selected="selected"':'';?>>Balance Sheet</option>
-                                <option value="profit-and-loss" <?php echo($accounts->account_type == 'profit-and-loss' )?'selected="selected"':'';?>>Profit and Loss</option>
+                                <?php foreach($accountType as $type){?>
+                                    <option value="<?php echo $type->account_type_id;?>" <?php echo($accounts->account_type_id == $type->account_type_id )?'selected="selected"':'';?>><?php echo $type->account_type_name;?></option>
+                                <?php }?>
                             </select>
                         </div>
                         

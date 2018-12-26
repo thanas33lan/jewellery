@@ -25,9 +25,10 @@ return [
     'Zend\Cache',
     'Zend\Router',
     'Zend\Validator',
-    'ZendDeveloperTools',
+    // 'ZendDeveloperTools',
     'Application',
     'Accounts',
     'Login',
     'User',
+    'Products',
 ];

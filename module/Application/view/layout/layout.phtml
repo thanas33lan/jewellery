@@ -10,7 +10,7 @@ $name = $sessionLogin->name;
 $tyreMenu = "";
 $tyreMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>User Details</span></a></li>";
 $tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href=". $this->url('accounts', array('action' => 'index')) ."><span class='nav-main-link-name'>Accounts Details</span></a></li>";
-// $tyreMenu.="<li id='nav-main-item'><a id='tyre' class='nav-main-link' href=". $this->url('admin', array('action' => 'tyre')) ."><span class='nav-main-link-name'>Tyre Details</span></a></li>";
+$tyreMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href=". $this->url('products', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Products</span></a></li>";
 ?>
 <?= $this->doctype() ?>
 <html lang="en">
@@ -92,6 +92,14 @@ $tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href="
             <a class="link-fx font-w600 font-size-md text-white" href="/" style=" font-size: 20px; ">
               <span class="text-white">Jewellery</span>&nbsp;<span class="text-white-75">Shop</span>
             </a>
+            <!-- <div>
+                <a class="js-class-toggle text-white-75 js-class-toggle-enabled" data-target="#sidebar-style-toggler" data-class="fa-toggle-off fa-toggle-on" data-toggle="layout" data-action="sidebar_style_toggle" href="javascript:void(0)">
+                    <i class="fa fa-toggle-off" id="sidebar-style-toggler"></i>
+                </a>
+                <a class="d-lg-none text-white ml-2" data-toggle="layout" data-action="sidebar_close" href="javascript:void(0)">
+                    <i class="fa fa-times-circle"></i>
+                </a>
+            </div> -->
             <!-- END Logo -->
           </div>
         </div>
@@ -158,6 +166,9 @@ $tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href="
                 </div>
               </div>
             </div>
+            <!-- <button type="button" class="btn btn-dual" data-toggle="layout" data-action="side_overlay_toggle">
+                <i class="far fa-fw fa-list-alt"></i>
+            </button> -->
             <!-- END User Dropdown -->
           </div>
           <!-- END Right Section -->
@@ -234,7 +245,7 @@ $tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href="
     $(function () {
       str=$(location).attr('pathname');
       splitsUrl=str.split("/",4);
-      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' )
+      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' || splitsUrl[1]=='products')
       {
           $('#manage').addClass('open');
           $('#'+splitsUrl[1]).addClass('active');

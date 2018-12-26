@@ -34,7 +34,8 @@
             "Application\\": "module/Application/src/",
             "Accounts\\": "module/Accounts/src/",
             "Login\\": "module/Login/src/",
-            "User\\": "module/User/src/"
+            "User\\": "module/User/src/",
+            "Products\\": "module/Products/src/"
         }
     },
     "autoload-dev": {

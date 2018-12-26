@@ -22,11 +22,8 @@ class User
 
     public function exchangeArray(array $data)
     {
-        $config = new \Zend\Config\Reader\Ini();
-        $configResult = $config->fromFile('config/custom.config.ini');
         if(isset($data['password']) && trim($data['password']) != ''){
-            $password = sha1($data['password'] . $configResult["password"]["salt"]);
-            $this->password = $password;
+            $this->password = $data['password'];
         }
 
         $this->user_id      = !empty($data['user_id']) ? $data['user_id'] : null;

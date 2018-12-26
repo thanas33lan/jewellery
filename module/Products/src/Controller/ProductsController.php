@@ -1,16 +1,16 @@
 <?php
-namespace User\Controller;
+namespace Products\Controller;
 
-use User\Model\UserTable;
+use Products\Model\ProductsTable;
 use Zend\View\Model\ViewModel;
 use Zend\Json\Json;
 use Zend\Mvc\Controller\AbstractActionController;
 
-class UserController extends AbstractActionController
+class ProductsController extends AbstractActionController
 {
     private $table;
 
-    public function __construct(UserTable $table)
+    public function __construct(ProductsTable $table)
     {
         $this->table = $table;
     }
@@ -29,13 +29,12 @@ class UserController extends AbstractActionController
     {
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $user = $request->getPost();
-            $this->table->saveUser($user);
-            return $this->redirect()->toUrl("/user");
+            $products = $request->getPost();
+            $this->table->saveProducts($products);
+            return $this->redirect()->toUrl("/products");
         }
         return new ViewModel([
-            'roles' => $this->table->fetchAllRoles(),
-            'states' => $this->table->fetchAllState()
+            'productsType' => $this->table->fetchAllProductsType()
         ]);
     }
     
@@ -43,21 +42,15 @@ class UserController extends AbstractActionController
     {
         $request = $this->getRequest();
         if ($request->isPost()) {
-            $user = $request->getPost();
-            $this->table->saveUser($user);
-            return $this->redirect()->toUrl("/user");
+            $products = $request->getPost();
+            $this->table->saveProducts($products);
+            return $this->redirect()->toUrl("/products");
         }
         $id = base64_decode($this->params()->fromRoute('id'));
-        $checkId = $this->table->getUser($id);
-        if(isset($checkId)){
-            return new ViewModel([
-                'roles' => $this->table->fetchAllRoles(),
-                'states' => $this->table->fetchAllState(),
-                'user' => $this->table->getUser($id)
-            ]);
-        }else{
-            return $this->redirect()->toUrl("/user");
-        }
+        return new ViewModel([
+            'products' => $this->table->getProducts($id),
+            'productsType' => $this->table->fetchAllProductsType()
+        ]);
     }
     
     public function deleteAction()
@@ -65,7 +58,7 @@ class UserController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             $params = $request->getPost();
-            $result = $this->table->deleteUser($params);
+            $result = $this->table->deleteProducts($params);
             $viewModel = new ViewModel([
                 'result' => $result
             ]);

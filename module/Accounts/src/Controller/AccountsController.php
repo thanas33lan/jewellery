@@ -33,7 +33,9 @@ class AccountsController extends AbstractActionController
             $this->table->saveAccounts($accounts);
             return $this->redirect()->toUrl("/accounts");
         }
-        return new ViewModel();
+        return new ViewModel([
+            'accountType' => $this->table->fetchAllAccountType()
+        ]);
     }
     
     public function editAction()
@@ -46,14 +48,21 @@ class AccountsController extends AbstractActionController
         }
         $id = base64_decode($this->params()->fromRoute('id'));
         return new ViewModel([
-            'accounts' => $this->table->getAccounts($id)
+            'accounts' => $this->table->getAccounts($id),
+            'accountType' => $this->table->fetchAllAccountType()
         ]);
     }
     
     public function deleteAction()
     {
-        $id = base64_decode($this->params()->fromRoute('id'));
-        $this->table->deleteAccounts($id);
-        return $this->redirect()->toUrl("/accounts");
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $result = $this->table->deleteAccounts($params);
+            $viewModel = new ViewModel([
+                'result' => $result
+            ]);
+            return $viewModel->setTerminal(true);
+        }
     }
 }

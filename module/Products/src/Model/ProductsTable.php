@@ -1,5 +1,5 @@
 <?php
-namespace User\Model;
+namespace Products\Model;
 
 use RuntimeException;
 use Zend\Db\Sql\Select;
@@ -7,7 +7,7 @@ use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
 
-class UserTable
+class ProductsTable
 {
     private $tableGateway;
 
@@ -16,22 +16,17 @@ class UserTable
         $this->tableGateway = $tableGateway;
     }
 
-    public function fetchAllRoles()
+    public function fetchAllProductsType()
     {
-        $role = new Select('roles');
-        return $this->tableGateway->selectWith($role);
-    }
-    
-    public function fetchAllState()
-    {
-        $state = new Select('state');
-        return $this->tableGateway->selectWith($state);
+        $select = new Select('products_type');
+        return $this->tableGateway->selectWith($select);
     }
 
     public function fetchAll($parameters)
     {
-        $aColumns = ['role_name','name','username','phone','user_status'];
-        $orderColumns = ['role_name','name','username','phone','user_status'];
+        // return $this->tableGateway->select();
+        $aColumns = ['products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
+        $orderColumns = ['products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
         
         /* Paging */
         $sLimit = "";
@@ -93,8 +88,9 @@ class UserTable
         /*
         * Get data to display
         */
-        $select = new Select(array( 'ud' => 'user_details' ));
-        $select->join(array('r' => 'roles'), 'ud.role_id = r.role_id', array('role_name'));
+        $select = new Select(['p'=>'products']);
+        $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
+        // \Zend\Debug\Debug::dump($select);die;
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -121,14 +117,16 @@ class UserTable
         );
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = ucwords($aRow->role_name);
-            $row[] = ucwords($aRow->name);
-            $row[] = $aRow->username;
-            $row[] = $aRow->phone;
-            $row[] = ucwords($aRow->user_status);
-            $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/user/edit/' . base64_encode($aRow->user_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteUser(' . $aRow->user_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+            $row[] = ucfirst($aRow->products_type_name);
+            $row[] = ucwords($aRow->products_name);
+            $row[] = $aRow->products_wastage;
+            $row[] = $aRow->products_rate;
+            $row[] = $aRow->products_vat;
+            $row[] = $aRow->products_qty;
+            $row[] = 
+                    '<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
+                        <a class="btn btn-primary" href="/products/edit/' . base64_encode($aRow->products_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteAccount(' . $aRow->products_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -136,60 +134,56 @@ class UserTable
         return $output;
     }
     
-    public function getUser($id)
+    public function getProducts($id)
     {
-        $userId = (int) $id;
-        $rowset = $this->tableGateway->select(['user_id' => $userId]);
+        $productsId = (int) $id;
+        $rowset = $this->tableGateway->select(['products_id' => $productsId]);
         $row = $rowset->current();
         
         $alertContainer = new Container('alert');
         if (! $row) {
-            $alertContainer->alertMsg = 'User not found';
+            $alertContainer->alertMsg = 'Products not found';
             return 0;
         }
 
         return $row;
     }
 
-    public function saveUser($user)
+    public function saveProducts($products)
     {
-        $config = new \Zend\Config\Reader\Ini();
-        $configResult = $config->fromFile('config/custom.config.ini');
         $data = [
-            'role_id'  => $user->role_id,
-            'name'  => $user->name,
-            'username'  => $user->username,
-            'phone'  => $user->phone,
-            'user_dob'  => $user->user_dob,
-            'state'  => $user->state,
-            'city'  => $user->city,
-            'address'  => $user->address,
-            'pincode'  => $user->pincode,
-            'user_status' => $user->user_status
+            'products_type_id' => $products->products_type_id,
+            'products_name'  => $products->products_name,
+            'products_short_name'  => $products->products_short_name,
+            'products_wastage'  => $products->products_wastage,
+            'products_charge'  => $products->products_charge,
+            'products_rate'  => $products->products_rate,
+            'products_description'  => $products->products_description,
+            'products_addition_rate_g'  => $products->products_addition_rate_g,
+            'products_vat'  => $products->products_vat,
+            'products_vat_rate'  => $products->products_vat_rate,
+            'products_qty'  => $products->products_qty,
+            'products_status'  => $products->products_status,
         ];
-        if(isset($user->password) && trim($user->password) != ''){
-            $password = sha1($user->password . $configResult["password"]["salt"]);
-            $data['password'] = $password;
-        }
-        $userId = (int) $user->user_id;
+
+        $productsId = (int) $products->products_id;
         $alertContainer = new Container('alert');
-        
-        if ($userId === 0) {
+
+        if ($productsId === 0) {
             $inserted = $this->tableGateway->insert($data);
             if($inserted > 0){
                 $alertContainer->alertMsg = 'Products details added successfully';
             }
             return;
         }
-        $updated = $this->tableGateway->update($data, ['user_id' => $userId]);
-
+        $updated = $this->tableGateway->update($data, ['products_id' => $productsId]);
         if($updated > 0){
-            $alertContainer->alertMsg = 'User details updated successfully';
+            $alertContainer->alertMsg = 'Products details updated successfully';
         }
     }
 
-    public function deleteUser($params)
+    public function deleteProducts($params)
     {
-        return $this->tableGateway->delete(['user_id' => (int) $params->user_id]);
+        return $this->tableGateway->delete(['products_id' => (int) $params->products_id]);
     }
 }
