@@ -1,5 +1,5 @@
 <?php
-namespace User\Model;
+namespace Vat\Model;
 
 use RuntimeException;
 use Zend\Db\Sql\Select;
@@ -7,7 +7,7 @@ use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
 
-class UserTable
+class VatTable
 {
     private $tableGateway;
 
@@ -16,22 +16,10 @@ class UserTable
         $this->tableGateway = $tableGateway;
     }
 
-    public function fetchAllRoles()
-    {
-        $role = new Select('roles');
-        return $this->tableGateway->selectWith($role);
-    }
-    
-    public function fetchAllState()
-    {
-        $state = new Select('state');
-        return $this->tableGateway->selectWith($state);
-    }
-
     public function fetchAll($parameters)
     {
-        $aColumns = ['role_name','name','username','phone','user_status'];
-        $orderColumns = ['role_name','name','username','phone','user_status'];
+        $aColumns = ['vat_slab','vat_rate','vat_account','vat_status'];
+        $orderColumns = ['vat_slab','vat_rate','vat_account','vat_status'];
         
         /* Paging */
         $sLimit = "";
@@ -93,8 +81,7 @@ class UserTable
         /*
         * Get data to display
         */
-        $select = new Select(array( 'ud' => 'user_details' ));
-        $select->join(array('r' => 'roles'), 'ud.role_id = r.role_id', array('role_name'));
+        $select = new Select('vat_details');
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -121,14 +108,13 @@ class UserTable
         );
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = ucwords($aRow->role_name);
-            $row[] = ucwords($aRow->name);
-            $row[] = $aRow->username;
-            $row[] = $aRow->phone;
-            $row[] = ucwords($aRow->user_status);
+            $row[] = ucwords(str_replace("-"," ",$aRow->vat_slab));
+            $row[] = $aRow->vat_rate;
+            $row[] = ucwords(str_replace("-"," ",$aRow->vat_account));
+            $row[] = ucwords($aRow->vat_status);
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/user/edit/' . base64_encode($aRow->user_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteUser(' . $aRow->user_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/vat/edit/' . base64_encode($aRow->vat_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteVat(' . $aRow->vat_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -136,60 +122,48 @@ class UserTable
         return $output;
     }
     
-    public function getUser($id)
+    public function getVat($id)
     {
-        $userId = (int) $id;
-        $rowset = $this->tableGateway->select(['user_id' => $userId]);
+        $vatId = (int) $id;
+        $rowset = $this->tableGateway->select(['vat_id' => $vatId]);
         $row = $rowset->current();
         
         $alertContainer = new Container('alert');
         if (! $row) {
-            $alertContainer->alertMsg = 'User not found';
+            $alertContainer->alertMsg = 'Vat not found';
             return 0;
         }
 
         return $row;
     }
 
-    public function saveUser($user)
+    public function saveVat($vat)
     {
-        $config = new \Zend\Config\Reader\Ini();
-        $configResult = $config->fromFile('config/custom.config.ini');
         $data = [
-            'role_id'  => $user->role_id,
-            'name'  => $user->name,
-            'username'  => $user->username,
-            'phone'  => $user->phone,
-            'user_dob'  => $user->user_dob,
-            'state'  => $user->state,
-            'city'  => $user->city,
-            'address'  => $user->address,
-            'pincode'  => $user->pincode,
-            'user_status' => $user->user_status
+            'vat_slab'  => $vat->vat_slab,
+            'vat_rate'  => $vat->vat_rate,
+            'vat_account'  => $vat->vat_account,
+            'vat_status' => $vat->vat_status
         ];
-        if(isset($user->password) && trim($user->password) != ''){
-            $password = sha1($user->password . $configResult["password"]["salt"]);
-            $data['password'] = $password;
-        }
-        $userId = (int) $user->user_id;
+        $vatId = (int) $vat->vat_id;
         $alertContainer = new Container('alert');
         
-        if ($userId === 0) {
+        if ($vatId === 0) {
             $inserted = $this->tableGateway->insert($data);
             if($inserted > 0){
-                $alertContainer->alertMsg = 'User details added successfully';
+                $alertContainer->alertMsg = 'Vat details added successfully';
             }
             return;
         }
-        $updated = $this->tableGateway->update($data, ['user_id' => $userId]);
+        $updated = $this->tableGateway->update($data, ['vat_id' => $vatId]);
 
         if($updated > 0){
-            $alertContainer->alertMsg = 'User details updated successfully';
+            $alertContainer->alertMsg = 'Vat details updated successfully';
         }
     }
 
-    public function deleteUser($params)
+    public function deleteVat($params)
     {
-        return $this->tableGateway->delete(['user_id' => (int) $params->user_id]);
+        return $this->tableGateway->delete(['vat_id' => (int) $params->vat_id]);
     }
 }

@@ -1,0 +1,101 @@
+<div class="bg-body-light">
+     <div class="content content-full">
+          <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Vat</h1>
+               <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                         <a href="<?= $this->url('vat', array('action' => 'index')); ?>"><li class="breadcrumb-item">Vat Details</li></a>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
+                    </ol>
+               </nav>
+          </div>
+     </div>
+</div>
+
+
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Add Vat Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="col-md-12 table-responsive" id="hide">
+                <form name="vatInformation" id="vatInformation"  class="mb-5" action="<?= $this->url('vat', array('action' => 'add')); ?>" method="post">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="vat_slab">Select Slab<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_slab" name="vat_slab" title="Please select the vat slab" onchange="changeSlab(this.value);">
+                                <option value="">--select--</option>
+                                <option value="vat-1%">VAT 1%</option>
+                                <option value="vat-12.5%">VAT 12.5%</option>
+                                <option value="vat-14.5%">VAT 14.5%</option>
+                                <option value="vat-4%">VAT 4%</option>
+                                <option value="vat-5%">VAT 5%</option>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="vat_rate">Vat Rate<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control isRequired" id="vat_rate" name="vat_rate" placeholder="Enter the  vat rate" title="Please enter the vat rate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="vat_account">Select Account<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_account" name="vat_account" title="Please select the vat account">
+                                <option value="">--select--</option>
+                                <option value="bank-account">Bank Account</option>
+                                <option value="capital-a/c">Capital A/C</option>
+                                <option value="cash-account">Cash Account</option>
+                                <option value="creditors-1">Creditors 1</option>
+                                <option value="debtors-1">Debtors 1</option>
+                                <option value="excise-duty-account">Excise Duty Account</option>
+                                <option value="interest-account">Interest Account</option>
+                                <option value="other-expense">Other Expense</option>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="vat_status">Status<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_status" name="vat_status" title="Please select the status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row items-push">
+                        <div class="col-lg-7 offset-lg-4">
+                            <a href="<?= $this->url('vat', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
+                            <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    duplicateName = true;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'vatInformation'
+        });
+        if (flag) {
+            if (duplicateName) {
+                $.blockUI();
+                document.getElementById('vatInformation').submit();
+            }
+        }
+    }
+
+    function changeSlab(val){
+        var str = val.replace("-"," ");
+        var $val = str.toUpperCase();
+        $('#vat_rate').val($val);
+    }
+</script>

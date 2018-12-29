@@ -60,6 +60,21 @@ class UserController extends AbstractActionController
         }
     }
     
+    public function editProfileAction()
+    {
+        $id = base64_decode($this->params()->fromRoute('id'));
+        $checkId = $this->table->getUser($id);
+        if(isset($checkId)){
+            return new ViewModel([
+                'roles' => $this->table->fetchAllRoles(),
+                'states' => $this->table->fetchAllState(),
+                'user' => $this->table->getUser($id)
+            ]);
+        }else{
+            return $this->redirect()->toUrl("/user");
+        }
+    }
+    
     public function deleteAction()
     {
         $request = $this->getRequest();

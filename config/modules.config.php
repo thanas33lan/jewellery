@@ -31,4 +31,5 @@ return [
     'Login',
     'User',
     'Products',
+    'Vat',
 ];

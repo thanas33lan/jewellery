@@ -1,0 +1,102 @@
+<div class="bg-body-light">
+     <div class="content content-full">
+          <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Vat</h1>
+               <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                         <a href="<?= $this->url('vat', array('action' => 'index')); ?>"><li class="breadcrumb-item">Vat Details</li></a>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
+                    </ol>
+               </nav>
+          </div>
+     </div>
+</div>
+
+
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Add Vat Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="col-md-12 table-responsive" id="hide">
+                <form name="vatInformation" id="vatInformation"  class="mb-5" action="<?= $this->url('vat', array('action' => 'edit')); ?>" method="post">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="vat_slab">Select Slab<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_slab" name="vat_slab" title="Please select the vat slab" onchange="changeSlab(this.value);">
+                                <option value="">--select--</option>
+                                <option value="vat-1%" <?php echo($vat->vat_slab == 'vat-1%' )?'selected="selected"':'';?>>VAT 1%</option>
+                                <option value="vat-12.5%" <?php echo($vat->vat_slab == 'vat-12.5%' )?'selected="selected"':'';?>>VAT 12.5%</option>
+                                <option value="vat-14.5%" <?php echo($vat->vat_slab == 'vat-14.5%' )?'selected="selected"':'';?>>VAT 14.5%</option>
+                                <option value="vat-4%" <?php echo($vat->vat_slab == 'vat-4%' )?'selected="selected"':'';?>>VAT 4%</option>
+                                <option value="vat-5%" <?php echo($vat->vat_slab == 'vat-5%' )?'selected="selected"':'';?>>VAT 5%</option>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="vat_rate">Vat Rate<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $vat->vat_slab;?>" class="form-control isRequired" id="vat_rate" name="vat_rate" placeholder="Enter the  vat rate" title="Please enter the vat rate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="vat_account">Select Account<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_account" name="vat_account" title="Please select the vat account">
+                                <option value="">--select--</option>
+                                <option value="bank-account" <?php echo($vat->vat_account == 'bank-account' )?'selected="selected"':'';?>>Bank Account</option>
+                                <option value="capital-a/c" <?php echo($vat->vat_account == 'capital-a/c' )?'selected="selected"':'';?>>Capital A/C</option>
+                                <option value="cash-account" <?php echo($vat->vat_account == 'cash-account' )?'selected="selected"':'';?>>Cash Account</option>
+                                <option value="creditors-1" <?php echo($vat->vat_account == 'creditors-1' )?'selected="selected"':'';?>>Creditors 1</option>
+                                <option value="debtors-1" <?php echo($vat->vat_account == 'debtors-1' )?'selected="selected"':'';?>>Debtors 1</option>
+                                <option value="excise-duty-account" <?php echo($vat->vat_account == 'excise-duty-account' )?'selected="selected"':'';?>>Excise Duty Account</option>
+                                <option value="interest-account" <?php echo($vat->vat_account == 'interest-account' )?'selected="selected"':'';?>>Interest Account</option>
+                                <option value="other-expense" <?php echo($vat->vat_account == 'other-expense' )?'selected="selected"':'';?>>Other Expense</option>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="vat_status">Status<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="vat_status" name="vat_status" title="Please select the status">
+                                <option value="active" <?php echo($vat->vat_status == 'active' )?'selected="selected"':'';?>>Active</option>
+                                <option value="inactive" <?php echo($vat->vat_status == 'inactive' )?'selected="selected"':'';?>>Inactive</option>
+                            </select>
+                        </div>
+                    </div>    
+                    
+                    <div class="row items-push">
+                        <input type="hidden" value="<?php echo $vat->vat_id;?>" name="vat_id">
+                        <div class="col-lg-7 offset-lg-4">
+                            <a href="<?= $this->url('vat', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
+                            <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    duplicateName = true;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'vatInformation'
+        });
+        if (flag) {
+            if (duplicateName) {
+                $.blockUI();
+                document.getElementById('vatInformation').submit();
+            }
+        }
+    }
+
+    function changeSlab(val){
+        var str = val.replace("-"," ");
+        var $val = str.toUpperCase();
+        $('#vat_rate').val($val);
+    }
+</script>

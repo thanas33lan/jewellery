@@ -7,10 +7,11 @@ $roleCode = $sessionLogin->roleCode;
 $userName = $sessionLogin->userName;
 $name = $sessionLogin->name;
 
-$tyreMenu = "";
-$tyreMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>User Details</span></a></li>";
-$tyreMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href=". $this->url('accounts', array('action' => 'index')) ."><span class='nav-main-link-name'>Accounts Details</span></a></li>";
-$tyreMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href=". $this->url('products', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Products</span></a></li>";
+$masterMenu = "";
+$masterMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>User Details</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href=". $this->url('accounts', array('action' => 'index')) ."><span class='nav-main-link-name'>Accounts Details</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href=". $this->url('products', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Products</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $this->url('vat', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Vat</span></a></li>";
 ?>
 <?= $this->doctype() ?>
 <html lang="en">
@@ -119,10 +120,10 @@ $tyreMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href="
             <li class="nav-main-item " id="manage">
               <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="true" href="#">
                 <i class="nav-main-link-icon si si-grid"></i>
-                <span class="nav-main-link-name ">Admin</span>
+                <span class="nav-main-link-name ">Master</span>
               </a>
               <ul class="nav-main-submenu">
-                  <?= $tyreMenu;?>
+                  <?= $masterMenu;?>
               </ul>
             </li>
           </ul>
@@ -155,7 +156,7 @@ $tyreMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href="
               </button>
               <div class="dropdown-menu dropdown-menu-right p-0" aria-labelledby="page-header-user-dropdown">
                 <div class="p-2">
-                  <a class="dropdown-item"  href="/admin/edit-profile/<?= base64_encode($sessionLogin->userId);?>">
+                  <a class="dropdown-item"  href="/user/edit-profile/<?= base64_encode($sessionLogin->userId);?>">
                       <i class="far fa-fw fa-user mr-1"></i> Edit Profile
                   </a>
                   <div role="separator" class="dropdown-divider"></div>
@@ -245,7 +246,7 @@ $tyreMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href="
     $(function () {
       str=$(location).attr('pathname');
       splitsUrl=str.split("/",4);
-      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' || splitsUrl[1]=='products')
+      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' || splitsUrl[1]=='products' || splitsUrl[1]=='vat')
       {
           $('#manage').addClass('open');
           $('#'+splitsUrl[1]).addClass('active');

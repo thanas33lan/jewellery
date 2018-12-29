@@ -151,34 +151,32 @@ class AccountsTable
 
     public function saveAccounts($accounts)
     {
+        $accountsRegisterDb = new AccountsRegisterTable($this->tableGateway);
+        $accountsGeneralDb = new AccountsGeneralTable($this->tableGateway);
         $data = [
-            'account_type' => $accounts->type,
-            'account_address'  => $accounts->address,
-            'account_area'  => $accounts->area,
-            'account_city'  => $accounts->city,
-            'account_pincode'  => $accounts->pincode,
-            'account_mobile'  => $accounts->mobile,
-            'account_email'  => $accounts->email,
-            'account_name_tamil'  => $accounts->name,
-            'account_city_tamil'  => $accounts->cityTamil,
-            'account_status'  => $accounts->accountStatus,
+            'account_type_id' => $accounts->account_type,
+            'account_address'  => $accounts->account_address,
+            'account_area'  => $accounts->account_area,
+            'account_city'  => $accounts->account_city,
+            'account_pincode'  => $accounts->account_pincode,
+            'account_mobile'  => $accounts->account_mobile,
+            'account_email'  => $accounts->account_email,
+            'account_name_tamil'  => $accounts->account_name_tamil,
+            'account_city_tamil'  => $accounts->account_city_tamil,
+            'account_status'  => $accounts->account_status,
         ];
-
-        $accountId = (int) $accounts->accountId;
-        $alertContainer = new Container('alert');
+        $accountId = (int) $accounts->accounts_id;
 
         if ($accountId === 0) {
             $inserted = $this->tableGateway->insert($data);
-            if($inserted > 0){
-                $alertContainer->alertMsg = 'Products details added successfully';
-            }
-            return;
+            $lastInsertedId = $this->tableGateway->lastInsertValue;
+
+            return $lastInsertedId;
         }
 
         $updated = $this->tableGateway->update($data, ['account_id' => $accountId]);
-        if($updated > 0){
-            $alertContainer->alertMsg = 'User details updated successfully';
-        }
+        
+        return $updated;
     }
 
     public function deleteAccounts($params)

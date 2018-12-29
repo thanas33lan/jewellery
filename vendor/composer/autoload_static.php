@@ -75,6 +75,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             'Webmozart\\Assert\\' => 17,
         ),
+        'V' => 
+        array (
+            'Vat\\' => 4,
+        ),
         'U' => 
         array (
             'User\\' => 5,
@@ -289,6 +293,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'Webmozart\\Assert\\' => 
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
+        ),
+        'Vat\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Vat/src',
         ),
         'User\\' => 
         array (

@@ -1,37 +1,27 @@
 <?php
-namespace User\Model;
+namespace Accounts\Model;
 
+use Model\AccountsRegister;
 use RuntimeException;
 use Zend\Db\Sql\Select;
 use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
 
-class UserTable
+class AccountsRegisterTable
 {
-    private $tableGateway;
+    private $tableGateway2;
 
-    function __construct(TableGatewayInterface $tableGateway)
+    function __construct(TableGatewayInterface $tableGateway2)
     {
-        $this->tableGateway = $tableGateway;
-    }
-
-    public function fetchAllRoles()
-    {
-        $role = new Select('roles');
-        return $this->tableGateway->selectWith($role);
-    }
-    
-    public function fetchAllState()
-    {
-        $state = new Select('state');
-        return $this->tableGateway->selectWith($state);
+        $this->tableGateway = $tableGateway2;
     }
 
     public function fetchAll($parameters)
     {
-        $aColumns = ['role_name','name','username','phone','user_status'];
-        $orderColumns = ['role_name','name','username','phone','user_status'];
+        // return $this->tableGateway->select();
+        $aColumns = ['accounts_register_tin','accounts_register_cst','accounts_register_code','accounts_register_gstin','accounts_register_delivery_name','accounts_register_address','accounts_register_city'];
+        $orderColumns = ['accounts_register_tin','accounts_register_cst','accounts_register_code','accounts_register_gstin','accounts_register_delivery_name','accounts_register_address','accounts_register_city'];
         
         /* Paging */
         $sLimit = "";
@@ -93,8 +83,7 @@ class UserTable
         /*
         * Get data to display
         */
-        $select = new Select(array( 'ud' => 'user_details' ));
-        $select->join(array('r' => 'roles'), 'ud.role_id = r.role_id', array('role_name'));
+        $select = new Select('accounts_register');
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -121,14 +110,16 @@ class UserTable
         );
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = ucwords($aRow->role_name);
-            $row[] = ucwords($aRow->name);
-            $row[] = $aRow->username;
-            $row[] = $aRow->phone;
-            $row[] = ucwords($aRow->user_status);
+            $row[] = $aRow->accounts_register_tin;
+            $row[] = $aRow->accounts_register_cst;
+            $row[] = $aRow->accounts_register_code;
+            $row[] = $aRow->accounts_register_gstin;
+            $row[] = ucfirst($aRow->accounts_register_delivery_name);
+            $row[] = $aRow->accounts_register_address;
+            $row[] = $aRow->accounts_register_city;
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/user/edit/' . base64_encode($aRow->user_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteUser(' . $aRow->user_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/accounts/edit/' . base64_encode($aRow->accounts_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteRegisterAccount(' . $aRow->accounts_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -136,60 +127,47 @@ class UserTable
         return $output;
     }
     
-    public function getUser($id)
+    public function getAccounts($id)
     {
-        $userId = (int) $id;
-        $rowset = $this->tableGateway->select(['user_id' => $userId]);
+        $accountRegisterId = (int) $id;
+        $rowset = $this->tableGateway->select(['accounts_id' => $accountRegisterId]);
         $row = $rowset->current();
         
-        $alertContainer = new Container('alert');
         if (! $row) {
-            $alertContainer->alertMsg = 'User not found';
             return 0;
         }
 
         return $row;
     }
 
-    public function saveUser($user)
+    public function saveAccounts($accounts,$accountsLastInsertedId)
     {
-        $config = new \Zend\Config\Reader\Ini();
-        $configResult = $config->fromFile('config/custom.config.ini');
         $data = [
-            'role_id'  => $user->role_id,
-            'name'  => $user->name,
-            'username'  => $user->username,
-            'phone'  => $user->phone,
-            'user_dob'  => $user->user_dob,
-            'state'  => $user->state,
-            'city'  => $user->city,
-            'address'  => $user->address,
-            'pincode'  => $user->pincode,
-            'user_status' => $user->user_status
+            'accounts_register_tin'             => $accounts->accounts_register_tin,
+            'accounts_register_cst'             => $accounts->accounts_register_cst,
+            'accounts_register_licence'         => $accounts->accounts_register_licence,
+            'accounts_register_code'            => $accounts->accounts_register_code,
+            'accounts_register_gstin'           => $accounts->accounts_register_gstin,
+            'accounts_register_delivery_name'   => $accounts->accounts_register_delivery_name,
+            'accounts_register_address'         => $accounts->accounts_register_address,
+            'accounts_register_area'            => $accounts->accounts_register_area,
+            'accounts_register_city'            => $accounts->accounts_register_city
         ];
-        if(isset($user->password) && trim($user->password) != ''){
-            $password = sha1($user->password . $configResult["password"]["salt"]);
-            $data['password'] = $password;
+        if($accountsLastInsertedId > 0){
+            $data['accounts_id'] = $accountsLastInsertedId;
+        }else{
+            $data['accounts_id'] = $accounts->accounts_id;
         }
-        $userId = (int) $user->user_id;
-        $alertContainer = new Container('alert');
-        
-        if ($userId === 0) {
-            $inserted = $this->tableGateway->insert($data);
-            if($inserted > 0){
-                $alertContainer->alertMsg = 'User details added successfully';
-            }
-            return;
+        $accountRegisterId = (int) $accounts->accounts_register_id;
+        if ($accountRegisterId === 0) {
+            return $this->tableGateway->insert($data);
         }
-        $updated = $this->tableGateway->update($data, ['user_id' => $userId]);
 
-        if($updated > 0){
-            $alertContainer->alertMsg = 'User details updated successfully';
-        }
+        return $this->tableGateway->update($data, ['accounts_register_id' => $accountRegisterId]);
     }
 
-    public function deleteUser($params)
+    public function deleteAccounts($params)
     {
-        return $this->tableGateway->delete(['user_id' => (int) $params->user_id]);
+        return $this->tableGateway->delete(['accounts_id' => (int) $params->accounts_id]);
     }
 }

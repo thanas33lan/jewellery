@@ -1,14 +1,14 @@
 <?php
-    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
 ?>
 <div class="bg-body-light">
     <div class="content content-full">
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Products Details</h1>
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Vat Details</h1>
             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="<?php echo $this->url('products',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Products</a>
+                        <a href="<?php echo $this->url('vat',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Vat</a>
                     </li>
                 </ol>
             </nav>
@@ -18,27 +18,25 @@
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Manage Products Details</h3>
+            <h3 class="block-title">Manage Vat Details</h3>
             <div class="block-options">
                 <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
             </div>
         </div>
         <div class="block-content block-content-full">
-            <table id="productsDataTable" class="table table-bordered table-striped table-vcenter">
+            <table id="vatDataTable" class="table table-bordered table-striped table-vcenter">
                 <thead>
                     <tr>
-                        <th>Type</th>
-                        <th>Name</th>
-                        <th>Wastage</th>
-                        <th>Rate</th>
-                        <th>Vat</th>
-                        <th>Qty</th>
+                        <th>Vat Slab</th>
+                        <th>Vat Rate</th>
+                        <th>Vat Account</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="7" class="dataTables_empty">Loading data from server</td>
+                        <td colspan="5" class="dataTables_empty">Loading data from server</td>
                     </tr>
                 </tbody>
             </table>
@@ -50,14 +48,14 @@
     /* Table initialisation */
    oTable = null;
     $(document).ready(function() {
-        oTable = $('#productsDataTable').dataTable( {
+        oTable = $('#vatDataTable').dataTable( {
             "bAutoWidth": false,
             "bProcessing": true,
             "bServerSide": true,
             "aoColumns": [
                     <?= $editAction;?>
             ],
-            "sAjaxSource": "<?= $this->url('products',array('action' => 'index')); ?>",
+            "sAjaxSource": "<?= $this->url('vat',array('action' => 'index')); ?>",
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',
@@ -70,16 +68,16 @@
         } );
     } );
 
-    function deleteAccount(id){
-        conf=confirm("Are you sure, you want delete this account!");
+    function deleteVat(id){
+        conf=confirm("Are you sure, you want delete this Vat!");
 		if(conf){
-			$.post("<?php echo $this->url('products',array('action'=>'delete')); ?>",{products_id:id},
+			$.post("<?php echo $this->url('vat',array('action'=>'delete')); ?>",{Vat_id:id},
 			function(data){
 				if(data>0){
 					oTable.fnDraw();
-					alert("Account deleted successfully.");
+					alert("Vat deleted successfully.");
 				}else{
-					alert("Account not deleted!",'err');
+					alert("Vat not deleted!",'err');
                 }
 			});
 		}
