@@ -141,7 +141,7 @@
                                 $key++;
                                 ?>
                                 <tr>
-                                    <td align="center" style="vertical-align:middle;width:95px;height: 65px;display:inline-block;"><a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="insRow();"><i class="fa fa-plus"></i></a>&nbsp;<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="removeAttributeRow(this.parentNode.parentNode);dleteVoucher('<?php echo $voucher->sales_voucher_id;?>);"><i class="fa fa-minus"></i></a></td>
+                                    <td align="center" style="vertical-align:middle;width:95px;height: 65px;display:inline-block;"><a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="insRow();"><i class="fa fa-plus"></i></a>&nbsp;<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="removeAttributeRow(this.parentNode.parentNode);dleteVoucher(<?php echo $voucher->sales_voucher_id;?>);"><i class="fa fa-minus"></i></a></td>
                                     <td><input type="hidden" id="sales_voucher_id" name="sales_voucher_id[]" value="<?php echo $voucher->sales_voucher_id;?>" />
                                         <select name="sales_voucher_products_id[]" id="sales_voucher_products_id<?php echo $key;?>" class="select2 input-width form-control sales_voucher_products_id isRequired" title="Please enter Product" onchange="checkExistProduct('<?php echo $key;?>')">
                                             <option value="">-- Select --</option>
@@ -179,7 +179,7 @@
                 <div class="box-footer mt-5 text-center">
                     <input type="hidden" id="delete_id" name="delete_id" />
                     <a class="btn btn-primary" href="javascript:void(0);" onclick="validateNow();return false;">Submit</a>
-                    <a href="<?php echo $this->url('sales',array('action' => 'view-voucher'));?>" class="btn btn-default"> Cancel</a>
+                    <a class="btn btn-danger" href="<?php echo $this->url('sales',array('action' => 'view-voucher'));?>" class="btn btn-default"> Cancel</a>
                 </div>
             </form>
         </div>
@@ -280,6 +280,10 @@
         }
         $(el).fadeOut("slow", function() {
             el.parentNode.removeChild(el);
+            rl = document.getElementById("salesTable").rows.length;
+            if (rl == 0) {
+                insRow();
+            }
             updateTotalPrice();
         });
     }

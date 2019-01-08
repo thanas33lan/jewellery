@@ -75,9 +75,9 @@ class SalesController extends AbstractActionController
         $request = $this->getRequest();
         if ($request->isPost()) {
             $sales = $request->getPost();
-            $updated =$this->table->saveSales($sales);
-            $updatedVoucher = $this->tableVoucher->saveSales($sales,0);
-            if($updated > 0 || $updatedVoucher > 0){
+            $lastId =$this->table->saveSales($sales);
+            $updatedVoucher = $this->tableVoucher->saveSales($sales,$lastId);
+            if($lastId > 0 || $updatedVoucher > 0){
                 $alertContainer->alertMsg = 'Sales details updated successfully';
             }
             return $this->redirect()->toUrl("/sales/view-voucher");

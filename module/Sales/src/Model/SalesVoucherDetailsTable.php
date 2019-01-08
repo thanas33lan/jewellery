@@ -59,21 +59,23 @@ class SalesVoucherDetailsTable
             ];
         }
         
-        $salesVoucherId = (int) $sales->sales_voucher_id;
-        if ($salesVoucherId === 0) {
-            for($i=0;$i<$n;$i++){
+        for($i=0;$i<$n;$i++){
+            if (0 === (int) $sales->sales_voucher_id[$i]) {
                 $insertResult = $this->tableGateway->insert($data[$i]);
                 return ($insertResult>0)? 1:0;
             }
         }
+        $updateResult = 0;
         if(isset($sales->delete_id) && trim($sales->delete_id) != ''){
             $deleteIds = explode(',',$sales->delete_id);
             foreach($deleteIds as $delete){
-                $this->deleteSales($delete);
+                $updateResult = $this->tableGateway->delete(['sales_voucher_id' => (int) $delete]);
             }
         }
         for($i=0;$i<$n;$i++){
-            $updateResult = $this->tableGateway->update($data[$i], [ 'sales_voucher_id' => $sales->sales_voucher_id[$i] ]);
+            if (0 != (int) $sales->sales_voucher_id[$i]) {
+                $updateResult = $this->tableGateway->update($data[$i], [ 'sales_voucher_id' => $sales->sales_voucher_id[$i] ]);
+            }
         }
         return ($updateResult>0)? 1:0;
     }
