@@ -1,13 +1,16 @@
 <?php
-namespace Products\Model;
+namespace Sales\Model;
 
 use RuntimeException;
 use Zend\Db\Sql\Select;
 use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
+use Sales\Model\SalesVoucherDetailsTable;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\ResultSet\HydratingResultSet;
 
-class ProductsTable
+class SalesTable 
 {
     private $tableGateway;
 
@@ -16,17 +19,31 @@ class ProductsTable
         $this->tableGateway = $tableGateway;
     }
 
-    public function fetchAllProductsType()
+    public function getAllProducts()
     {
-        $select = new Select('products_type');
-        return $this->tableGateway->selectWith($select);
+        $productsQuery = new Select('products');
+        $productsQuery->where(['products_status'=>'active']);
+        return $this->tableGateway->selectWith($productsQuery);
+    }
+    
+    public function getLastSalesId()
+    {
+        $productsQuery = new Select('sales_details');
+        $productsQuery->order('sales_id DESC');
+        return $this->tableGateway->selectWith($productsQuery)->current();
+    }
+    
+    public function getAllAccounts()
+    {
+        $productsQuery = new Select('account_type');
+        $productsQuery->where(['account_type_status'=>'active']);
+        return $this->tableGateway->selectWith($productsQuery);
     }
 
     public function fetchAll($parameters)
     {
-        // return $this->tableGateway->select();
-        $aColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
-        $orderColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
+        $aColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_voucher_remarks','sales_grand_total'];
+        $orderColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_voucher_remarks','sales_grand_total'];
         
         /* Paging */
         $sLimit = "";
@@ -88,9 +105,8 @@ class ProductsTable
         /*
         * Get data to display
         */
-        $select = new Select(['p'=>'products']);
-        $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
-        // \Zend\Debug\Debug::dump($select);die;
+        $select = new Select([ 's' => 'sales_details' ]);
+        $select->join(['at' => 'account_type'], 's.sales_voucher_sales_account = at.account_type_id', ['account_type_name']);
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -115,18 +131,18 @@ class ProductsTable
                 "iTotalDisplayRecords" => $iFilteredTotal,
                 "aaData" => array()
         );
+        $common = new CommonService();
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = $aRow->products_tag;
-            $row[] = ucfirst($aRow->products_type_name);
-            $row[] = ucwords($aRow->products_name);
-            $row[] = $aRow->products_wastage;
-            $row[] = $aRow->products_rate;
-            $row[] = $aRow->products_vat;
-            $row[] = $aRow->products_qty;
+            $row[] = $aRow->sales_voucher_no;
+            $row[] = $common->humanDateFormat($aRow->sales_voucher_date);
+            $row[] = ucwords(str_replace("-"," ",$aRow->sales_voucher_account));
+            $row[] = ucwords($aRow->account_type_name);
+            $row[] = ucwords($aRow->sales_voucher_remarks);
+            $row[] = $aRow->sales_grand_total;
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/products/edit/' . base64_encode($aRow->products_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteAccount(' . $aRow->products_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/sales/edit/' . base64_encode($aRow->sales_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteSales(' . $aRow->sales_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -134,57 +150,53 @@ class ProductsTable
         return $output;
     }
     
-    public function getProducts($id)
+    public function getSales($id)
     {
-        $productsId = (int) $id;
-        $rowset = $this->tableGateway->select(['products_id' => $productsId]);
+        $salesId = (int) $id;
+        $rowset = $this->tableGateway->select(['sales_id' => $salesId]);
         $row = $rowset->current();
         
         $alertContainer = new Container('alert');
         if (! $row) {
-            $alertContainer->alertMsg = 'Products not found';
+            $alertContainer->alertMsg = 'Sales not found';
             return 0;
         }
 
         return $row;
     }
 
-    public function saveProducts($products)
+    public function saveSales($sales)
     {
+        $common = new CommonService();
         $data = [
-            'products_type_id' => $products->products_type_id,
-            'products_tag'  => $products->products_tag,
-            'products_name'  => $products->products_name,
-            'products_short_name'  => $products->products_short_name,
-            'products_wastage'  => $products->products_wastage,
-            'products_charge'  => $products->products_charge,
-            'products_rate'  => $products->products_rate,
-            'products_description'  => $products->products_description,
-            'products_addition_rate_g'  => $products->products_addition_rate_g,
-            'products_vat'  => $products->products_vat,
-            'products_vat_rate'  => $products->products_vat_rate,
-            'products_qty'  => $products->products_qty,
-            'products_status'  => $products->products_status,
+            'sales_id' => $sales->sales_id,
+            'sales_voucher_no' => $sales->sales_voucher_no,
+            'sales_voucher_date' => $common->dbDateFormat($sales->sales_voucher_date),
+            'sales_voucher_account' => $sales->sales_voucher_account,
+            'sales_voucher_sales_account' => $sales->sales_voucher_sales_account,
+            'sales_voucher_remarks' => $sales->sales_voucher_remarks,
+            'sales_grand_total' => $sales->sales_grand_total
         ];
-
-        $productsId = (int) $products->products_id;
+        $salesId = (int) $sales->sales_id;
         $alertContainer = new Container('alert');
-
-        if ($productsId === 0) {
+        
+        if ($salesId === 0) {
             $inserted = $this->tableGateway->insert($data);
+            $lastInsertedId = $this->tableGateway->lastInsertValue;
             if($inserted > 0){
-                $alertContainer->alertMsg = 'Products details added successfully';
+                $alertContainer->alertMsg = 'Sales details added successfully';
             }
-            return;
+            return $lastInsertedId;
         }
-        $updated = $this->tableGateway->update($data, ['products_id' => $productsId]);
+        $updated = $this->tableGateway->update($data, ['sales_id' => $salesId]);
+
         if($updated > 0){
-            $alertContainer->alertMsg = 'Products details updated successfully';
+            $alertContainer->alertMsg = 'Sales details updated successfully';
         }
     }
 
-    public function deleteProducts($params)
+    public function deleteSales($params)
     {
-        return $this->tableGateway->delete(['products_id' => (int) $params->products_id]);
+        return $this->tableGateway->delete(['sales_id' => (int) $params->sales_id]);
     }
 }

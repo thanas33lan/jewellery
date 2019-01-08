@@ -8,10 +8,15 @@ $userName = $sessionLogin->userName;
 $name = $sessionLogin->name;
 
 $masterMenu = "";
-$masterMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>User Details</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>Admin User Details</span></a></li>";
 $masterMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href=". $this->url('accounts', array('action' => 'index')) ."><span class='nav-main-link-name'>Accounts Details</span></a></li>";
 $masterMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href=". $this->url('products', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Products</span></a></li>";
 $masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $this->url('vat', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Vat</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='gold-chit' class='nav-main-link' href=". $this->url('gold-chit', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage GoldChit</span></a></li>";
+
+$entryMenu = "";
+$entryMenu.="<li id='nav-main-item'><a id='sales' class='nav-main-link' href=". $this->url('sales', array('action' => 'index')) ."><span class='nav-main-link-name'>Create Voucher</span></a></li>";
+$entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' href=". $this->url('sales', array('action' => 'view-voucher')) ."><span class='nav-main-link-name'>View Voucher</span></a></li>";
 ?>
 <?= $this->doctype() ?>
 <html lang="en">
@@ -117,13 +122,22 @@ $masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $
               </a>
             </li>
             <li class="nav-main-heading"></li>
-            <li class="nav-main-item " id="manage">
+            <li class="nav-main-item " id="master">
               <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="true" href="#">
-                <i class="nav-main-link-icon si si-grid"></i>
+                <i class="nav-main-link-icon si si-wrench"></i>
                 <span class="nav-main-link-name ">Master</span>
               </a>
               <ul class="nav-main-submenu">
                   <?= $masterMenu;?>
+              </ul>
+            </li>
+            <li class="nav-main-item" id="entry">
+              <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="true" href="#">
+                <i class="nav-main-link-icon far fa-edit"></i>
+                <span class="nav-main-link-name ">Entry</span>
+              </a>
+              <ul class="nav-main-submenu">
+                  <?= $entryMenu;?>
               </ul>
             </li>
           </ul>
@@ -246,10 +260,19 @@ $masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $
     $(function () {
       str=$(location).attr('pathname');
       splitsUrl=str.split("/",4);
-      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' || splitsUrl[1]=='products' || splitsUrl[1]=='vat')
+      if( splitsUrl[1]=='accounts' || splitsUrl[1]=='user' || splitsUrl[1]=='products' || splitsUrl[1]=='vat' || splitsUrl[1]=='gold-chit')
       {
-          $('#manage').addClass('open');
+          $('#master').addClass('open');
           $('#'+splitsUrl[1]).addClass('active');
+      }
+      if( splitsUrl[1]=='sales')
+      {
+          $('#entry').addClass('open');
+          if(splitsUrl[2]=='view-voucher'){
+            $('#'+splitsUrl[2]).addClass('active');
+          }else{
+            $('#'+splitsUrl[1]).addClass('active');
+          }
       }
     });
     </script>

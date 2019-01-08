@@ -1,3 +1,7 @@
+<?php 
+    use Application\Service\CommonService;
+    $common = new CommonService();
+?>
 <div class="bg-body-light">
      <div class="content content-full">
           <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
@@ -162,7 +166,7 @@
                                 <div class="form-group row">
                                     <label class="col-sm-2 col-form-label" for="accounts_general_connection_date">Connection Date<span class="mandatory">*</span></label>
                                     <div class="col-sm-4">
-                                        <input type="text" value="<?php echo date('d-M-Y', strtotime($accountsGeneral->accounts_general_connection_date));?>" class="js-datepicker form-control" id="accounts_general_connection_date" name="accounts_general_connection_date" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the connection date" title="Please enter the connection date" readonly="readonly">
+                                        <input type="text" value="<?php echo $common->humanDateFormat($accountsGeneral->accounts_general_connection_date);?>" class="js-datepicker form-control" id="accounts_general_connection_date" name="accounts_general_connection_date" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the connection date" title="Please enter the connection date" readonly="readonly">
                                     </div>
                                     
                                     <label class="col-sm-2 col-form-label" for="accounts_general_connection_type">Connection Type<span class="mandatory">*</span></label>

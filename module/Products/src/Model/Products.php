@@ -6,6 +6,7 @@ class Products
 {
     public $products_id;
     public $products_type_id;
+    public $products_tag;
     public $products_name;
     public $products_short_name;
     public $products_wastage;
@@ -24,6 +25,7 @@ class Products
     {
         $this->products_id     = !empty($data['products_id']) ? $data['products_id'] : null;
         $this->products_type_id = !empty($data['products_type_id']) ? $data['products_type_id'] : null;
+        $this->products_tag  = !empty($data['products_tag']) ? $data['products_tag'] : null;
         $this->products_name  = !empty($data['products_name']) ? $data['products_name'] : null;
         $this->products_short_name  = !empty($data['products_short_name']) ? $data['products_short_name'] : null;
         $this->products_wastage  = !empty($data['products_wastage']) ? $data['products_wastage'] : null;

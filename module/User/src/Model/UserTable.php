@@ -93,8 +93,8 @@ class UserTable
         /*
         * Get data to display
         */
-        $select = new Select(array( 'ud' => 'user_details' ));
-        $select->join(array('r' => 'roles'), 'ud.role_id = r.role_id', array('role_name'));
+        $select = new Select([ 'ud' => 'user_details' ]);
+        $select->join(['r' => 'roles'], 'ud.role_id = r.role_id', ['role_name']);
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -113,12 +113,12 @@ class UserTable
         $select->reset('offset');
         $rowTotal = $this->tableGateway->selectWith($select);
         $iFilteredTotal = count($rowTotal);
-        $output = array(
+        $output = [
                 "sEcho" => intval($parameters['sEcho']),
                 "iTotalRecords" => count($rowTotal),
                 "iTotalDisplayRecords" => $iFilteredTotal,
                 "aaData" => array()
-        );
+        ];
         foreach ($resultSet as $aRow) {
             $row = array();
             $row[] = ucwords($aRow->role_name);
@@ -153,6 +153,7 @@ class UserTable
 
     public function saveUser($user)
     {
+        $common = new CommonService();
         $config = new \Zend\Config\Reader\Ini();
         $configResult = $config->fromFile('config/custom.config.ini');
         $data = [
@@ -160,7 +161,7 @@ class UserTable
             'name'  => $user->name,
             'username'  => $user->username,
             'phone'  => $user->phone,
-            'user_dob'  => $user->user_dob,
+            'user_dob'  => $common->dbDateFormat($user->user_dob),
             'state'  => $user->state,
             'city'  => $user->city,
             'address'  => $user->address,

@@ -142,8 +142,9 @@ class AccountsGeneralTable
 
     public function saveAccounts($accounts,$accountsLastInsertedId)
     {
+        $common = new CommonService();
         $data = [
-            'accounts_general_connection_date'  => $accounts->accounts_general_connection_date,
+            'accounts_general_connection_date'  => $common->dbDateFormat($accounts->accounts_general_connection_date),
             'accounts_general_connection_type'  => $accounts->accounts_general_connection_type,
             'accounts_general_deposite_amount'  => $accounts->accounts_general_deposite_amount,
             'accounts_general_rent_amount'  => $accounts->accounts_general_rent_amount,

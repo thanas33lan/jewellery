@@ -61,9 +61,9 @@ class Module implements ConfigProviderInterface
             'factories' => [
                 Controller\AccountsController::class => function($container) {
                     return new Controller\AccountsController(
-                            $container->get(Model\AccountsTable::class),
-                            $container->get(Model\AccountsRegisterTable::class),
-                            $container->get(Model\AccountsGeneralTable::class)
+                        $container->get(Model\AccountsTable::class),
+                        $container->get(Model\AccountsRegisterTable::class),
+                        $container->get(Model\AccountsGeneralTable::class)
                     );
                 },
             ],

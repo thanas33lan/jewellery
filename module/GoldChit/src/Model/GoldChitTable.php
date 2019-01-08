@@ -1,5 +1,5 @@
 <?php
-namespace Products\Model;
+namespace GoldChit\Model;
 
 use RuntimeException;
 use Zend\Db\Sql\Select;
@@ -7,7 +7,7 @@ use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
 
-class ProductsTable
+class GoldChitTable
 {
     private $tableGateway;
 
@@ -16,17 +16,10 @@ class ProductsTable
         $this->tableGateway = $tableGateway;
     }
 
-    public function fetchAllProductsType()
-    {
-        $select = new Select('products_type');
-        return $this->tableGateway->selectWith($select);
-    }
-
     public function fetchAll($parameters)
     {
-        // return $this->tableGateway->select();
-        $aColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
-        $orderColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
+        $aColumns = ['goldchit_number','goldchit_name','goldchit_remarks','goldchit_amount','goldchit_bonus','goldchit_no_of_month','goldchit_total_amount','goldchit_scheme_name'];
+        $orderColumns = ['goldchit_number','goldchit_name','goldchit_remarks','goldchit_amount','goldchit_bonus','goldchit_no_of_month','goldchit_total_amount','goldchit_scheme_name'];
         
         /* Paging */
         $sLimit = "";
@@ -88,9 +81,7 @@ class ProductsTable
         /*
         * Get data to display
         */
-        $select = new Select(['p'=>'products']);
-        $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
-        // \Zend\Debug\Debug::dump($select);die;
+        $select = new Select('goldchit_details');
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -109,24 +100,25 @@ class ProductsTable
         $select->reset('offset');
         $rowTotal = $this->tableGateway->selectWith($select);
         $iFilteredTotal = count($rowTotal);
-        $output = array(
+        $output = [
                 "sEcho" => intval($parameters['sEcho']),
                 "iTotalRecords" => count($rowTotal),
                 "iTotalDisplayRecords" => $iFilteredTotal,
                 "aaData" => array()
-        );
+        ];
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = $aRow->products_tag;
-            $row[] = ucfirst($aRow->products_type_name);
-            $row[] = ucwords($aRow->products_name);
-            $row[] = $aRow->products_wastage;
-            $row[] = $aRow->products_rate;
-            $row[] = $aRow->products_vat;
-            $row[] = $aRow->products_qty;
+            $row[] = $aRow->goldchit_number;
+            $row[] = ucwords($aRow->goldchit_name);
+            $row[] = ucwords($aRow->goldchit_remarks);
+            $row[] = $aRow->goldchit_amount;
+            $row[] = $aRow->goldchit_bonus;
+            $row[] = $aRow->goldchit_no_of_month;
+            $row[] = $aRow->goldchit_total_amount;
+            $row[] = ucwords($aRow->goldchit_scheme_name);
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/products/edit/' . base64_encode($aRow->products_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteAccount(' . $aRow->products_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/gold-chit/edit/' . base64_encode($aRow->goldchit_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteGoldChit(' . $aRow->goldchit_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -134,57 +126,58 @@ class ProductsTable
         return $output;
     }
     
-    public function getProducts($id)
+    public function getGoldChit($id)
     {
-        $productsId = (int) $id;
-        $rowset = $this->tableGateway->select(['products_id' => $productsId]);
+        $goldchitId = (int) $id;
+        $rowset = $this->tableGateway->select(['goldchit_id' => $goldchitId]);
         $row = $rowset->current();
         
         $alertContainer = new Container('alert');
         if (! $row) {
-            $alertContainer->alertMsg = 'Products not found';
+            $alertContainer->alertMsg = 'GoldChit not found';
             return 0;
         }
-
         return $row;
     }
 
-    public function saveProducts($products)
+    public function saveGoldChit($goldchit)
     {
+        $common = new CommonService();
         $data = [
-            'products_type_id' => $products->products_type_id,
-            'products_tag'  => $products->products_tag,
-            'products_name'  => $products->products_name,
-            'products_short_name'  => $products->products_short_name,
-            'products_wastage'  => $products->products_wastage,
-            'products_charge'  => $products->products_charge,
-            'products_rate'  => $products->products_rate,
-            'products_description'  => $products->products_description,
-            'products_addition_rate_g'  => $products->products_addition_rate_g,
-            'products_vat'  => $products->products_vat,
-            'products_vat_rate'  => $products->products_vat_rate,
-            'products_qty'  => $products->products_qty,
-            'products_status'  => $products->products_status,
+            'goldchit_number'  => $goldchit->goldchit_number,
+            'goldchit_date'  => $common->dbDateFormat($goldchit->goldchit_date),
+            'goldchit_name'  => $goldchit->goldchit_name,
+            'goldchit_address'  => $goldchit->goldchit_address,
+            'goldchit_area'  => $goldchit->goldchit_area,
+            'goldchit_city'  => $goldchit->goldchit_city,
+            'goldchit_phone'  => $goldchit->goldchit_phone,
+            'goldchit_pincode'  => $goldchit->goldchit_pincode,
+            'goldchit_remarks' => $goldchit->goldchit_remarks,
+            'goldchit_amount' => $goldchit->goldchit_amount,
+            'goldchit_bonus' => $goldchit->goldchit_bonus,
+            'goldchit_no_of_month' => $goldchit->goldchit_no_of_month,
+            'goldchit_total_amount' => $goldchit->goldchit_total_amount,
+            'goldchit_scheme_name' => $goldchit->goldchit_scheme_name
         ];
-
-        $productsId = (int) $products->products_id;
+        
+        $goldchitId = (int) $goldchit->goldchit_id;
         $alertContainer = new Container('alert');
-
-        if ($productsId === 0) {
+        if ($goldchitId === 0) {
             $inserted = $this->tableGateway->insert($data);
             if($inserted > 0){
-                $alertContainer->alertMsg = 'Products details added successfully';
+                $alertContainer->alertMsg = 'GoldChit details added successfully';
             }
             return;
         }
-        $updated = $this->tableGateway->update($data, ['products_id' => $productsId]);
+        $updated = $this->tableGateway->update($data, ['goldchit_id' => $goldchitId]);
+
         if($updated > 0){
-            $alertContainer->alertMsg = 'Products details updated successfully';
+            $alertContainer->alertMsg = 'GoldChit details updated successfully';
         }
     }
 
-    public function deleteProducts($params)
+    public function deleteGoldChit($params)
     {
-        return $this->tableGateway->delete(['products_id' => (int) $params->products_id]);
+        return $this->tableGateway->delete(['goldchit_id' => (int) $params->goldchit_id]);
     }
 }

@@ -83,6 +83,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             'User\\' => 5,
         ),
+        'S' => 
+        array (
+            'Sales\\' => 6,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -97,6 +101,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'I' => 
         array (
             'Interop\\Container\\' => 18,
+        ),
+        'G' => 
+        array (
+            'GoldChit\\' => 9,
         ),
         'D' => 
         array (
@@ -302,6 +310,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             0 => __DIR__ . '/../..' . '/module/User/src',
         ),
+        'Sales\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Sales/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
@@ -325,6 +337,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
+        ),
+        'GoldChit\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/GoldChit/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

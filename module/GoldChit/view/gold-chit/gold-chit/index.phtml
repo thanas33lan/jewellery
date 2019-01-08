@@ -1,14 +1,15 @@
 <?php
-    $editAction = '{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+    use Zend\Session\Container;
+    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
 ?>
 <div class="bg-body-light">
     <div class="content content-full">
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Products Details</h1>
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Gold Chit Details</h1>
             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="<?php echo $this->url('products',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Products</a>
+                        <a href="<?php echo $this->url('gold-chit',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Gold Chit</a>
                     </li>
                 </ol>
             </nav>
@@ -18,28 +19,29 @@
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Manage Products Details</h3>
+            <h3 class="block-title">Manage Gold Chit Details</h3>
             <div class="block-options">
                 <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
             </div>
         </div>
         <div class="block-content block-content-full">
-            <table id="productsDataTable" class="table table-bordered table-striped table-vcenter">
+            <table id="goldChitDataTable" class="table table-bordered table-striped table-vcenter">
                 <thead>
                     <tr>
-                        <th>Tag</th>
-                        <th>Type</th>
+                        <th>Number</th>
                         <th>Name</th>
-                        <th>Wastage</th>
-                        <th>Rate</th>
-                        <th>Vat</th>
-                        <th>Qty</th>
+                        <th>Remarks</th>
+                        <th>Amount</th>
+                        <th>Bonus</th>
+                        <th>No of Month</th>
+                        <th>Total Amount</th>
+                        <th>Scheme Name</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td colspan="8" class="dataTables_empty">Loading data from server</td>
+                        <td colspan="9" class="dataTables_empty">Loading data from server</td>
                     </tr>
                 </tbody>
             </table>
@@ -51,14 +53,14 @@
     /* Table initialisation */
    oTable = null;
     $(document).ready(function() {
-        oTable = $('#productsDataTable').dataTable( {
+        oTable = $('#goldChitDataTable').dataTable( {
             "bAutoWidth": false,
             "bProcessing": true,
             "bServerSide": true,
             "aoColumns": [
                     <?= $editAction;?>
             ],
-            "sAjaxSource": "<?= $this->url('products',array('action' => 'index')); ?>",
+            "sAjaxSource": "<?= $this->url('gold-chit',array('action' => 'index')); ?>",
             "fnServerData": function ( sSource, aoData, fnCallback ) {
                 $.ajax({
                     "dataType": 'json',
@@ -71,16 +73,16 @@
         } );
     } );
 
-    function deleteAccount(id){
-        conf=confirm("Are you sure, you want delete this account!");
+    function deleteUser(id){
+        conf=confirm("Are you sure, you want delete this this gold chit!");
 		if(conf){
-			$.post("<?php echo $this->url('products',array('action'=>'delete')); ?>",{products_id:id},
+			$.post("<?php echo $this->url('gold-chit',array('action'=>'delete')); ?>",{goldchit_id:id},
 			function(data){
 				if(data>0){
 					oTable.fnDraw();
-					alert("Account deleted successfully.");
+					alert("Gold Chit deleted successfully.");
 				}else{
-					alert("Account not deleted!",'err');
+					alert("Gold Chit not deleted!",'err');
                 }
 			});
 		}

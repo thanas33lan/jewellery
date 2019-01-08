@@ -25,6 +25,13 @@
             <div class="col-md-12 table-responsive" id="hide">
                 <form name="productsInformation" id="productsInformation"  class="mb-5" action="<?= $this->url('products', array('action' => 'add')); ?>" method="post">
                     <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_tag">Tag<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_tag;?>" class="form-control isRequired" id="products_tag" name="products_tag" placeholder="Enter the products tag" title="Please enter the products tag">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label class="col-sm-2 col-form-label" for="products_type_id">Select Products Type<span class="mandatory">*</span></label>
                         <div class="col-sm-4">
                             <select class="form-control isRequired" id="products_type_id" name="products_type_id" placeholder="Enter the products type" title="Please enter the products type">

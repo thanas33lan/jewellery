@@ -32,4 +32,6 @@ return [
     'User',
     'Products',
     'Vat',
+    'GoldChit',
+    'Sales',
 ];

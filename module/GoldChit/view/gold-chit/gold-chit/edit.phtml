@@ -1,0 +1,143 @@
+<?php 
+    use Application\Service\CommonService;
+    $common = new CommonService();
+?>
+<div class="bg-body-light">
+     <div class="content content-full">
+          <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Gold Chit</h1>
+               <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                         <a href="<?= $this->url('user', array('action' => 'index')); ?>"><li class="breadcrumb-item">Gold Chit Details</li></a>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
+                    </ol>
+               </nav>
+          </div>
+     </div>
+</div>
+
+
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Add Gold Chit Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="col-md-12 table-responsive" id="hide">
+                <form name="goldChitInformation" id="goldChitInformation"  class="mb-5" action="<?= $this->url('gold-chit', array('action' => 'edit')); ?>" method="post">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_number">Goldchit Number<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $goldChit->goldchit_number;?>" class="form-control isRequired" id="goldchit_number" name="goldchit_number" placeholder="Enter the number" title="Please enter the number">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_date">Date<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $common->humanDateFormat($goldChit->goldchit_date);?>" class="js-datepicker form-control" id="goldchit_date" name="goldchit_date" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the date" title="Please enter the date" readonly="readonly">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_name">Name<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $goldChit->goldchit_name;?>" class="form-control isRequired" id="goldchit_name" name="goldchit_name" placeholder="Enter the name" title="Please enter the name">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_address">Address<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea type="text" class="form-control isRequired" id="goldchit_address" name="goldchit_address" placeholder="Enter the address" title="Please enter the address"><?php echo $goldChit->goldchit_address;?></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_area">Area<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $goldChit->goldchit_area;?>" class="form-control isRequired" id="goldchit_area" name="goldchit_area" placeholder="Enter the area" title="Please enter the area">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_city">City<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $goldChit->goldchit_city;?>" class="form-control isRequired" id="goldchit_city" name="goldchit_city" placeholder="Enter the city" title="Please enter the city">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_phone">Phone<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_phone;?>" class="form-control isRequired" id="goldchit_phone" name="goldchit_phone" placeholder="Enter the phone" title="Please enter the phone">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_pincode">Pincode<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_pincode;?>" class="form-control isRequired" id="goldchit_pincode" name="goldchit_pincode" placeholder="Enter the pincode" title="Please enter the pincode">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_amount">Amount<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_amount;?>" class="form-control isRequired" id="goldchit_amount" name="goldchit_amount" placeholder="Enter the amount" title="Please enter the amount">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_bonus">Bonus<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_bonus;?>" class="form-control isRequired" id="goldchit_bonus" name="goldchit_bonus" placeholder="Enter the bonus" title="Please enter the bonus">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_no_of_month">No of Months<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_no_of_month;?>" class="form-control isRequired" id="goldchit_no_of_month" name="goldchit_no_of_month" placeholder="Enter the no of months" title="Please enter the no of months">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_total_amount">Total Amount<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" value="<?php echo $goldChit->goldchit_total_amount;?>" class="form-control isRequired" id="goldchit_total_amount" name="goldchit_total_amount" placeholder="Enter the total amount" title="Please enter the total amount">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="goldchit_scheme_name">Scheme Name<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $goldChit->goldchit_scheme_name;?>" class="form-control isRequired" id="goldchit_scheme_name" name="goldchit_scheme_name" placeholder="Enter the scheme name" title="Please enter the scheme name">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="goldchit_remarks">Remarks<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea class="form-control isRequired" id="goldchit_remarks" name="goldchit_remarks" placeholder="Enter the remarks" title="Please enter the remarks"><?php echo $goldChit->goldchit_remarks;?></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                    </div>
+                    
+                    <div class="row items-push">
+                        <input type="hidden" value="<?php echo $goldChit->goldchit_id;?>" name="goldchit_id">
+                        <div class="col-lg-7 offset-lg-4">
+                            <a href="<?= $this->url('gold-chit', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
+                            <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    duplicateName = true;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'goldChitInformation'
+        });
+        if (flag) {
+            if (duplicateName) {
+                $.blockUI();
+                document.getElementById('goldChitInformation').submit();
+            }
+        }
+    }
+</script>
