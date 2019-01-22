@@ -1,0 +1,153 @@
+<?php
+$productsLists = '';
+$searchProductType = '';
+$searchProductTag = '';
+
+foreach($productList as $product){
+    $productsLists.="<option value='$product->products_id'>$product->products_name</option>";
+    $searchProductTag.="<option value='$product->products_tag'>$product->products_tag</option>";
+}
+$editAction = '{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"}';
+?>
+<style>
+    
+</style>
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Products Report</h1>
+            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-content text-center">
+            <table class="row">
+                <tbody>
+                    <tr>
+                        <td class="p-3">
+                            <label class="control-label" for="searchProduct">Select product name to filter</label>
+                        </td>
+                        <td class="p-3">
+                            <select class="form-control" id="searchProduct" name="searchProduct" title="Please choose product name">
+                                <option value="">--select--</option>
+                                <?php echo $productsLists;?>
+                            </select>
+                        </td>
+                        
+                        <td class="p-3">
+                            <label class="control-label" for="searchProductTag">Select product name to filter</label>
+                        </td>
+                        <td class="p-3">
+                            <select class="form-control" id="searchProductTag" name="searchProductTag" title="Please choose product name">
+                                <option value="">--select--</option>
+                                <?php echo $searchProductTag;?>
+                            </select>
+                        </td>
+
+                        <td class="p-1">
+                            <input type="button" onclick="searchData();" value="Search" class="btn btn-success btn-sm">
+                        </td>
+                        <td class="p-1">
+                            <a href="" class="btn btn-danger btn-sm">Reset</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Choose your sales reports</h3>
+            <div class="block-options">
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-copy buttons-html5" type="button" onclick="exportProducts('copy');">Copy</button>  -->
+                <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-excel buttons-html5" type="button" onclick="exportProducts('excel');">Export Excel</button> 
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-csv buttons-html5" type="button" onclick="exportProducts('csv');">Export CSV</button>  -->
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-pdf buttons-html5" type="button" onclick="exportProducts('pdf');">Export PDF</button>  -->
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content block-content-full">
+            <table id="productsDataTable" class="table table-bordered table-striped table-vcenter">
+                <thead>
+                    <tr>
+                        <th>Tag</th>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Wastage</th>
+                        <th>Rate</th>
+                        <th>Vat</th>
+                        <th>Qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="dataTables_empty">Loading data from server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="<?php echo $this->basePath() . '/assets/plugins/daterangepicker/daterangepicker.js' ?>"></script>
+<script type="text/javascript">
+    /* Table initialisation */
+   oTable = null;
+    $(document).ready(function() {
+        $("#searchProduct").select2({
+            placeholder: "Filter product name",
+            width:'100%',
+            allowClear:true,
+            maximumSelectionLength: 2
+        });
+        
+        $("#searchProductTag").select2({
+            placeholder: "Filter product tag",
+            width:'100%',
+            allowClear:true,
+            maximumSelectionLength: 2
+        });
+
+        oTable = $('#productsDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('products',array('action' => 'index')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                aoData.push({ "name":"productById","value": $("#searchProduct").val()} );
+                aoData.push({ "name":"productByTag","value": $("#searchProductTag").val()} );
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+
+    function searchData(){
+        oTable.fnDraw();
+    }
+
+    function exportProducts(type){
+        $.blockUI();
+        $.post("<?php echo $this->url('reports-products',array('action'=>'export')); ?>",{type:type},
+        function(data){
+            if(data == "" || data == null || data == undefined){
+                $.unblockUI();
+                alert('Unable to generate download','err');
+			}else{
+                $.unblockUI();
+                document.location.href = '/temporary/'+data;
+			}
+        });
+    }
+</script>

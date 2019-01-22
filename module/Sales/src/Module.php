@@ -28,6 +28,10 @@ class Module implements ConfigProviderInterface
                     $tableGateway = $container->get(Model\SalesVoucherDetailsTableGateway::class);
                     return new Model\SalesVoucherDetailsTable($tableGateway);
                 },
+                Model\PriceTable::class => function($container) {
+                    $tableGateway = $container->get(Model\PriceTableGateway::class);
+                    return new Model\PriceTable($tableGateway);
+                },
 
                 Model\SalesTableGateway::class => function ($container) {
                     $dbAdapter = $container->get(AdapterInterface::class);
@@ -41,6 +45,12 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype1->setArrayObjectPrototype(new Model\SalesVoucherDetails);
                     return new TableGateway('sales_voucher_details', $dbAdapter, null, $resultSetPrototype1);
                 },
+                Model\PriceTableGateway::class => function ($container) {
+                    $dbAdapter = $container->get(AdapterInterface::class);
+                    $resultSetPrototype2 = new ResultSet();
+                    $resultSetPrototype2->setArrayObjectPrototype(new Model\Price);
+                    return new TableGateway('today_price', $dbAdapter, null, $resultSetPrototype2);
+                },
             ],
         ];
     }
@@ -52,7 +62,8 @@ class Module implements ConfigProviderInterface
                 Controller\SalesController::class => function($container) {
                     return new Controller\SalesController(
                         $container->get(Model\SalesTable::class),
-                        $container->get(Model\SalesVoucherDetailsTable::class)
+                        $container->get(Model\SalesVoucherDetailsTable::class),
+                        $container->get(Model\PriceTable::class)
                     );
                 },
             ],

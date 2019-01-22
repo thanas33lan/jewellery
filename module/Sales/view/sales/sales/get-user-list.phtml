@@ -1,0 +1,13 @@
+<?php
+$echoResult = array();
+if(isset($salesUsers['row'])){
+    foreach ($salesUsers['row'] as $row) {
+        $echoResult[] = array("value" => $row->user_id,"text" => ucwords($row->name));
+    }
+}else{
+    $echoResult[] = array("value" => '0','text'=>$salesUsers->search);
+}
+
+$result = array("result" => $echoResult);
+echo json_encode($result);
+?>

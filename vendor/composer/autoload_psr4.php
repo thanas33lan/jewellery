@@ -54,6 +54,7 @@ return array(
     'Vat\\' => array($baseDir . '/module/Vat/src'),
     'User\\' => array($baseDir . '/module/User/src'),
     'Sales\\' => array($baseDir . '/module/Sales/src'),
+    'Reports\\' => array($baseDir . '/module/Reports/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),

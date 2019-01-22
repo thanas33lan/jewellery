@@ -25,8 +25,15 @@ class Sales
     public $sales_voucher_date;
     public $sales_voucher_account;
     public $sales_voucher_sales_account;
-    public $sales_voucher_remarks;
     public $sales_grand_total;
+    public $sales_user_id;
+    public $sales_emi;
+    public $sales_received_type;
+    public $sales_remarks;
+    // User Details Table
+    public $user_id;
+    public $name;
+    public $user_status;
     
     public function exchangeArray(array $data)
     {
@@ -35,8 +42,11 @@ class Sales
         $this->sales_voucher_date  = !empty($data['sales_voucher_date']) ? $data['sales_voucher_date'] : null;
         $this->sales_voucher_account  = !empty($data['sales_voucher_account']) ? $data['sales_voucher_account'] : null;
         $this->sales_voucher_sales_account  = !empty($data['sales_voucher_sales_account']) ? $data['sales_voucher_sales_account'] : null;
-        $this->sales_voucher_remarks  = !empty($data['sales_voucher_remarks']) ? $data['sales_voucher_remarks'] : null;
         $this->sales_grand_total  = !empty($data['sales_grand_total']) ? $data['sales_grand_total'] : null;
+        $this->sales_user_id  = !empty($data['sales_user_id']) ? $data['sales_user_id'] : null;
+        $this->sales_emi  = !empty($data['sales_emi']) ? $data['sales_emi'] : null;
+        $this->sales_received_type  = !empty($data['sales_received_type']) ? $data['sales_received_type'] : null;
+        $this->sales_remarks  = !empty($data['sales_remarks']) ? $data['sales_remarks'] : null;
 
         if(isset($data['products_id']) && trim($data['products_id']) != ''){
             $this->products_id  = !empty($data['products_id']) ? $data['products_id'] : null;
@@ -77,6 +87,16 @@ class Sales
         }
         if(isset($data['account_type_status']) && trim($data['account_type_status']) != ''){
             $this->account_type_status  = !empty($data['account_type_status']) ? $data['account_type_status'] : null;
+        }
+        
+        if(isset($data['user_id']) && trim($data['user_id']) != ''){
+            $this->user_id  = !empty($data['user_id']) ? $data['user_id'] : null;
+        }
+        if(isset($data['name']) && trim($data['name']) != ''){
+            $this->name  = !empty($data['name']) ? $data['name'] : null;
+        }
+        if(isset($data['user_status']) && trim($data['user_status']) != ''){
+            $this->user_status  = !empty($data['user_status']) ? $data['user_status'] : null;
         }
     }
 }

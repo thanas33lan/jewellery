@@ -6,6 +6,7 @@ use Zend\Db\Sql\Select;
 use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
+use PHPExcel;
 
 class ProductsTable
 {
@@ -21,10 +22,164 @@ class ProductsTable
         $select = new Select('products_type');
         return $this->tableGateway->selectWith($select);
     }
+    
+    public function exportReports($params)
+    {
+        if(isset($params->type) && trim($params->type) != '')
+        {
+            if($params->type == 'excel'){
+                return $this->exportExcel();
+            }else{
+                
+            }
+        }
+    }
+    
+    public function exportExcel()
+    {
+        try{
+            $common = new CommonService();
+            $queryContainer = new Container('query');
+            $excel = new PHPExcel();
+            $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $cacheSettings = array('memoryCacheSize' => '80MB');
+            \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            $output = array();
+            $sheet = $excel->getActiveSheet();
+            
+            if(isset($params['searchDate']) && trim($params['searchDate'])!=""){
+                $start_date = '';
+                $end_date = '';
+                
+                $sDate = explode("to",$params['searchDate']);
+                if (isset($sDate[0]) && trim($sDate[0]) != "") {
+                    $start_date = $common->dateFormat(trim($sDate[0]));
+                }
+                if (isset($sDate[1]) && trim($sDate[1]) != "") {
+                    $end_date = $common->dateFormat(trim($sDate[1]));
+                }
+                $query = $query->where(array("s.invoice_date >='" . $start_date ."'", "s.invoice_date <='" . $end_date."'"));
+            }
+            
+            $sResult = $this->tableGateway->selectWith($queryContainer->productQuery);
+            
+            if(count($sResult) > 0) {
+                foreach($sResult as $aRow) {
+                    $row = array();
+                    
+                    $row[] = $aRow->products_tag;
+                    $row[] = ucfirst($aRow->products_type_name);
+                    $row[] = ucwords($aRow->products_name);
+                    $row[] = $aRow->products_wastage;
+                    $row[] = $aRow->products_rate;
+                    $row[] = $aRow->products_vat;
+                    $row[] = $aRow->products_qty;
+                    
+                    $output[] = $row;
+                }
+            }
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                    'size'=>12,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                    ),
+                )
+            );
+            $alignArray = array(
+                'font' => array(
+                    'bold' => true,
+                    'size'=>12,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+            );
+            
+           $borderStyle = array(
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                    ),
+                )
+            );
+          
+            $sheet->mergeCells('A1:B1');
+            $sheet->mergeCells('A2:B2');
+            
+            
+            $sheet->setCellValue('A1', html_entity_decode('Jewellery Shop Products Report', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+           
+            $sheet->setCellValue('A3', html_entity_decode('TAG', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('B3', html_entity_decode('TYPE NAME', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('C3', html_entity_decode('PRODUCT NAME', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('D3', html_entity_decode('WASTAGE', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('E3', html_entity_decode('RATE', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('F3', html_entity_decode('VAT', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('G3', html_entity_decode('QTY', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            
+            $sheet->mergeCells('A2:B2');
+           
+            $sheet->getStyle('A1:B1')->getFont()->setBold(TRUE)->setSize(16);
+            $sheet->getStyle('A2:B2')->getFont()->setBold(TRUE)->setSize(11);
+            $sheet->getStyle('C2:D2')->getFont()->setBold(TRUE)->setSize(11);
+            $sheet->getStyle('E2')->getFont()->setBold(TRUE)->setSize(11);
+            
+            $sheet->getStyle('A3')->applyFromArray($styleArray);
+            $sheet->getStyle('B3')->applyFromArray($styleArray);
+            $sheet->getStyle('C3')->applyFromArray($styleArray);
+            $sheet->getStyle('D3')->applyFromArray($styleArray);
+            $sheet->getStyle('E3')->applyFromArray($styleArray);
+            $sheet->getStyle('F3')->applyFromArray($styleArray);
+            $sheet->getStyle('G3')->applyFromArray($styleArray);
+            
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    if (is_numeric($value)) {
+                        $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    } else {
+                        $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+                    }
+                    $rRowCount = $rowNo + 4;
+                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->getColumn();
+                    $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle);
+                    $sheet->getDefaultRowDimension()->setRowHeight(18);
+                    $sheet->getColumnDimensionByColumn($colNo)->setWidth(20);
+                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 5)->getAlignment()->setWrapText(true);
+                    $colNo++;
+                }
+            }
+            
+            $writer = \PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+            $filename = 'Products-Report' . date('d-M-Y-H-i-s') . '.xls';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        }
+        catch (Exception $exc) {
+            return "";
+            error_log("Generate-Products-Report--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
+    }
 
     public function fetchAll($parameters)
     {
-        // return $this->tableGateway->select();
+        $queryContainer = new Container('query');
         $aColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
         $orderColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
         
@@ -103,10 +258,19 @@ class ProductsTable
                 $select->limit($sLimit);
                 $select->offset($sOffset);
         }
+        if(isset($parameters['productById']) && $parameters['productById']!='')
+		{
+			$select->where(['p.products_type_id'=>$parameters['productById']]);
+		}
+        if(isset($parameters['productByTag']) && $parameters['productByTag']!='')
+		{
+			$select->where(['p.products_tag'=>$parameters['productByTag']]);
+		}
         $resultSet = $this->tableGateway->selectWith($select);
         /* Data set length after filtering */
         $select->reset('limit');
         $select->reset('offset');
+        $queryContainer->productQuery = $select;
         $rowTotal = $this->tableGateway->selectWith($select);
         $iFilteredTotal = count($rowTotal);
         $output = array(

@@ -108,11 +108,41 @@
                             <input type="number" value="<?php echo $sales->sales_grand_total;?>" class="form-control" id="sales_grand_total" name="sales_grand_total" title="Please enter total value" readonly/>
                         </div>
                         
-                        <label for="phoneNo" class="col-md-2 control-label" for="sales_voucher_remarks">Remarks</label>
+                        <label for="sales_emi" class="col-md-2 control-label" for="sales_emi">Amount Received </label>
                         <div class="col-md-4">
-                            <textarea type="text" class="form-control" id="sales_voucher_remarks" name="sales_voucher_remarks" placeholder="Enter the remakrs" title="Please enter remakrs"><?php echo $sales->sales_voucher_remarks;?></textarea>
+                            <input type="number" value="<?php echo $sales->sales_emi;?>" class="form-control isRequired" id="sales_emi" name="sales_emi" title="Please enter emi amount"/>
                         </div>
-                </div>
+                        
+                    </div>
+                    <div class="form-group row">
+                        <label for="sales_user_id" class="col-md-2 control-label" for="sales_user_id">User <span class="mandatory">*</span></label>
+                        <div class="col-md-4">
+                            <select class="form-control isRequired" id="sales_user_id" name="sales_user_id" title="Please choose user">
+                                <option value="">--select--</option>
+                                <?php foreach($usersList as $user){?>
+                                    <option value="<?php echo $user->user_id;?>" <?php echo ($user->user_id == $sales->sales_user_id )?'selected=selected':'';?>><?php echo $user->name;?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        
+                        <label for="sales_received_type" class="col-md-2 control-label" for="sales_user_id">Received Type <span class="mandatory">*</span></label>
+                        <div class="col-md-4">
+                            <select class="form-control isRequired" id="sales_received_type" name="sales_received_type" title="Please received type">
+                                <option value="">--select--</option>
+                                <option value="cash" <?php echo($sales->sales_received_type == 'cash' )?'selected="selected"':'';?>>Cash</option>
+                                <option value="cheque" <?php echo($sales->sales_received_type == 'cheque' )?'selected="selected"':'';?>>Cheque</option>
+                                <option value="online" <?php echo($sales->sales_received_type == 'online' )?'selected="selected"':'';?>>Online</option>
+                                <option value="insurance" <?php echo($sales->sales_received_type == 'insurance' )?'selected="selected"':'';?>>Insurance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label for="sales_remarks" class="col-md-2 control-label" for="sales_remarks">Remarks</label>
+                        <div class="col-md-4">
+                            <textarea type="text" class="form-control" id="sales_remarks" name="sales_remarks" placeholder="Enter the remakrs" title="Please enter remakrs"><?php echo $sales->sales_remarks;?></textarea>
+                        </div>
+                    </div>
                 <div class=" table-responsive">
                     <table class="table table-bordered table-striped table-vcenter" style="width:100%;">
                         <thead>
@@ -179,7 +209,7 @@
                 <div class="box-footer mt-5 text-center">
                     <input type="hidden" id="delete_id" name="delete_id" />
                     <a class="btn btn-primary" href="javascript:void(0);" onclick="validateNow();return false;">Submit</a>
-                    <a class="btn btn-danger" href="<?php echo $this->url('sales',array('action' => 'view-voucher'));?>" class="btn btn-default"> Cancel</a>
+                    <a class="btn btn-danger" href="<?php echo $this->url('sales',array('action' => 'index'));?>" class="btn btn-default"> Cancel</a>
                 </div>
             </form>
         </div>
@@ -206,6 +236,12 @@
             placeholder: "Enter account",
             width:'300px',
             height:'50px',
+            allowClear:true,
+            maximumSelectionLength: 2
+        });
+        $("#sales_user_id").select2({
+            placeholder: "Enter account",
+            width:'100%',
             allowClear:true,
             maximumSelectionLength: 2
         });

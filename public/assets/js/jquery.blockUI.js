@@ -86,7 +86,7 @@
 		// override these in your code to change the default behavior and style
 		$.blockUI.defaults = {
 			// message displayed when blocking (use null for no message)
-			message:  '<span style="font-size:20px;font-weight:bold;">Loading ...</span>',
+			message:  '<span style="font-size:20px;font-weight:bold;">Please wait ...</span>',
 
 			title: null,		// title string; only used when theme == true
 			draggable: true,	// only used when theme == true (requires jquery-ui.js to be loaded)

@@ -1,0 +1,200 @@
+<?php
+$accountsLists = '';
+foreach($accountsList as $account){
+    $accountsLists.="<option value='$account->account_type_id'>$account->account_type_name</option>";
+}
+$editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"}';
+?>
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Sales Report</h1>
+            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-content text-center">
+            <table class="row">
+                <tbody>
+                    <tr>
+                        <td class="p-3">
+                            <label class="col-form-label" for="searchDate">Select date to filter</label>
+                        </td>
+                        <td class="p-3">
+                            <input type="text" id="searchDate" name="searchDate" class="form-control readonly" placeholder="Select Date" readonly/>
+                        </td>
+                        
+                        <td class="p-3">
+                            <label class="control-label" for="searchAccount">Select account to filter</label>
+                        </td>
+                        <td class="p-3">
+                            <select class="form-control" id="searchAccount" name="searchAccount" title="Please choose account">
+                                <option value="">--select--</option>
+                                <option value="bank-account">Bank Account</option>
+                                <option value="capital-account">Capital A/C</option>
+                                <option value="cash-account">Cash Account</option>
+                                <option value="creditors-1">Creditors 1</option>
+                                <option value="debtos-1">Debtors 1</option>
+                                <option value="excise-duty-account">Excise Duty Account</option>
+                                <option value="interest-account">Interest Account</option>
+                                <option value="other-expense">Other Expense</option>
+                                <option value="other-income">Other Income</option>
+                                <option value="purchase-account">Purchase Account</option>
+                                <option value="round-off-account">RoundOff Account</option>
+                                <option value="sales-account">Sales Account</option>
+                                <option value="sales-return-account">Sales Return Account</option>
+                                <option value="vat-tax-account">Vat Tax Account</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <label class="control-label" for="searchSalesAccount">Select Sales account to filter</label>
+                        </td>
+                        <td class="p-3">
+                            <select class="form-control" id="searchSalesAccount" name="searchSalesAccount" title="Please choose sales account">
+                                <option value="">--select--</option>
+                                <?php echo $accountsLists;?>
+                            </select>
+                        </td>
+                        <td class="p-1">
+                            <input type="button" onclick="searchData();" value="Search" class="btn btn-success btn-sm">
+                            <a href="" class="btn btn-danger btn-sm">Reset</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Choose your sales reports</h3>
+            <div class="block-options">
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-copy buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Copy</span></button>  -->
+                <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-excel buttons-html5" tabindex="0" aria-controls="example" type="button" onclick="exportProducts('excel');"><span>Export Excel</span></button> 
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-csv buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Export CSV</span></button>  -->
+                <!-- <span class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-pdf buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Export PDF</span></span>  -->
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content block-content-full">
+            <table id="salesDataTable" class="display table table-bordered table-striped table-vcenter">
+                <thead>
+                    <tr>
+                        <th>Voucher No</th>
+                        <th>Date</th>
+                        <th>Account</th>
+                        <th>Sales Account</th>
+                        <th>Remarks</th>
+                        <th>Grand Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="dataTables_empty">Loading data from server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="<?php echo $this->basePath() . '/assets/plugins/daterangepicker/daterangepicker.js' ?>"></script>
+<script type="text/javascript">
+    /* Table initialisation */
+   oTable = null;
+    $(document).ready(function() {
+        $("#searchAccount").select2({
+            placeholder: "Select account to filter",
+            width:'100%',
+            allowClear:true,
+            maximumSelectionLength: 2
+        });
+        $("#searchSalesAccount").select2({
+            placeholder: "Select sales account",
+            width:'100%',
+            allowClear:true,
+            maximumSelectionLength: 2
+        });
+
+        oTable = $('#salesDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('sales',array('action' => 'index')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                aoData.push({ "name":"searchDate","value": $("#searchDate").val()} );
+                aoData.push({ "name":"searchAccount","value": $("#searchAccount").val()} );
+                aoData.push({ "name":"searchSalesAccount","value": $("#searchSalesAccount").val()} );
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+
+    $('#searchDate').daterangepicker({
+
+        format: 'DD-MMM-YYYY',
+        separator: ' to ',
+        startDate: moment().subtract('days', 29),
+        endDate: moment(),
+        maxDate: moment(),
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract('days', 1), moment().subtract('days', 1)],
+            'Last 7 Days': [moment().subtract('days', 6), moment()],
+            'Last 30 Days': [moment().subtract('days', 29), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
+            'Last Month': [moment().subtract('month', 1).startOf('month'), moment().subtract('month', 1).endOf('month')]
+        }
+    },
+
+    function(start, end) {
+        startDate = start.format('YYYY-MM-DD');
+        endDate = end.format('YYYY-MM-DD');
+    });
+
+    function searchData(){
+        oTable.fnDraw();
+    }
+    
+    function deleteSales(id){
+        conf=confirm("Are you sure, you want delete this Sales!");
+		if(conf){
+			$.post("<?php echo $this->url('sales',array('action'=>'delete')); ?>",{sales_id:id},
+			function(data){
+				if(data>0){
+					oTable.fnDraw();
+					alert("Sales deleted successfully.");
+				}else{
+					alert("Sales not deleted!",'err');
+                }
+			});
+		}
+    }
+
+    function exportProducts(type){
+        $.blockUI();
+        $.post("<?php echo $this->url('reports-sales',array('action'=>'export')); ?>",{type:type},
+        function(data){
+            if(data == "" || data == null || data == undefined){
+                $.unblockUI();
+                alert('Unable to generate download','err');
+			}else{
+                $.unblockUI();
+                document.location.href = '/temporary/'+data;
+			}
+        });
+    }
+</script>

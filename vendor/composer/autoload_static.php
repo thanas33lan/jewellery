@@ -87,6 +87,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             'Sales\\' => 6,
         ),
+        'R' => 
+        array (
+            'Reports\\' => 8,
+        ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
@@ -313,6 +317,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'Sales\\' => 
         array (
             0 => __DIR__ . '/../..' . '/module/Sales/src',
+        ),
+        'Reports\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Reports/src',
         ),
         'Psr\\Log\\' => 
         array (

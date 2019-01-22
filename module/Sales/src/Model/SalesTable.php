@@ -7,8 +7,7 @@ use Zend\Session\Container;
 use Application\Service\CommonService;
 use Zend\Db\TableGateway\TableGatewayInterface;
 use Sales\Model\SalesVoucherDetailsTable;
-use Zend\Db\ResultSet\ResultSet;
-use Zend\Db\ResultSet\HydratingResultSet;
+use PHPExcel;
 
 class SalesTable 
 {
@@ -26,6 +25,24 @@ class SalesTable
         return $this->tableGateway->selectWith($productsQuery);
     }
     
+    public function getActiveUsers($search)
+    {
+        $usersQuery = new Select('user_details');
+        $usersQuery->where(['user_status'=>'active']);
+        $usersQuery->where("name LIKE '%" .$search. "%'");
+        $row = $this->tableGateway->selectWith($usersQuery);
+        $result['search'] = $search;
+        $result['row'] = $row;
+        return $result;
+    }
+    
+    public function getAllUsers()
+    {
+        $usersQuery = new Select('user_details');
+        $usersQuery->where(['user_status'=>'active']);
+        return $this->tableGateway->selectWith($usersQuery);
+    }
+    
     public function getLastSalesId()
     {
         $productsQuery = new Select('sales_details');
@@ -40,10 +57,162 @@ class SalesTable
         return $this->tableGateway->selectWith($productsQuery);
     }
 
+    public function exportReports($params)
+    {
+        if(isset($params->type) && trim($params->type) != '')
+        {
+            if($params->type == 'excel'){
+                return $this->exportExcel();
+            }else{
+                
+            }
+        }
+    }
+    
+    public function exportExcel()
+    {
+        try{
+            $common = new CommonService();
+            $queryContainer = new Container('query');
+            $excel = new PHPExcel();
+            $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+            $cacheSettings = array('memoryCacheSize' => '80MB');
+            \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+            $output = array();
+            $sheet = $excel->getActiveSheet();
+            
+            if(isset($params['searchDate']) && trim($params['searchDate'])!=""){
+                $start_date = '';
+                $end_date = '';
+                
+                $sDate = explode("to",$params['searchDate']);
+                if (isset($sDate[0]) && trim($sDate[0]) != "") {
+                    $start_date = $common->dbDateFormat(trim($sDate[0]));
+                }
+                if (isset($sDate[1]) && trim($sDate[1]) != "") {
+                    $end_date = $common->dbDateFormat(trim($sDate[1]));
+                }
+                $query = $query->where(array("s.invoice_date >='" . $start_date ."'", "s.invoice_date <='" . $end_date."'"));
+            }
+            
+            $sResult = $this->tableGateway->selectWith($queryContainer->salesQuery);
+            
+            if(count($sResult) > 0) {
+                foreach($sResult as $aRow) {
+                    $row = array();
+                    
+                    $row[] = $aRow->sales_voucher_no;
+                    $row[] = $common->humanDateFormat($aRow->sales_voucher_date);
+                    $row[] = ucwords(str_replace("-"," ",$aRow->sales_voucher_account));
+                    $row[] = ucwords($aRow->account_type_name);
+                    $row[] = ucwords($aRow->sales_remarks);
+                    $row[] = $aRow->sales_grand_total;
+                    
+                    $output[] = $row;
+                }
+            }
+            $styleArray = array(
+                'font' => array(
+                    'bold' => true,
+                    'size'=>12,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                    ),
+                )
+            );
+            $alignArray = array(
+                'font' => array(
+                    'bold' => true,
+                    'size'=>12,
+                ),
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                    'vertical' => \PHPExcel_Style_Alignment::VERTICAL_CENTER,
+                ),
+            );
+            
+           $borderStyle = array(
+                'alignment' => array(
+                    'horizontal' => \PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                ),
+                'borders' => array(
+                    'outline' => array(
+                        'style' => \PHPExcel_Style_Border::BORDER_THIN,
+                    ),
+                )
+            );
+          
+            $sheet->mergeCells('A1:B1');
+            $sheet->mergeCells('A2:B2');
+            
+            
+            $sheet->setCellValue('A1', html_entity_decode('Jewellery Shop Sales Report', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+           
+            $sheet->setCellValue('A3', html_entity_decode('VOUCHER NUMBER', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('B3', html_entity_decode('DATE', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('C3', html_entity_decode('ACCOUNT', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('D3', html_entity_decode('SALES ACCOUNT', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('E3', html_entity_decode('REMARKS', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            $sheet->setCellValue('F3', html_entity_decode('GRAND TOTAL', ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+            
+            $sheet->mergeCells('A2:B2');
+           
+            $sheet->getStyle('A1:B1')->getFont()->setBold(TRUE)->setSize(16);
+            $sheet->getStyle('A2:B2')->getFont()->setBold(TRUE)->setSize(11);
+            $sheet->getStyle('C2:D2')->getFont()->setBold(TRUE)->setSize(11);
+            $sheet->getStyle('E2')->getFont()->setBold(TRUE)->setSize(11);
+            
+            $sheet->getStyle('A3')->applyFromArray($styleArray);
+            $sheet->getStyle('B3')->applyFromArray($styleArray);
+            $sheet->getStyle('C3')->applyFromArray($styleArray);
+            $sheet->getStyle('D3')->applyFromArray($styleArray);
+            $sheet->getStyle('E3')->applyFromArray($styleArray);
+            $sheet->getStyle('F3')->applyFromArray($styleArray);
+            
+            foreach ($output as $rowNo => $rowData) {
+                $colNo = 0;
+                foreach ($rowData as $field => $value) {
+                    if (!isset($value)) {
+                        $value = "";
+                    }
+                    if (is_numeric($value)) {
+                        $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_NUMERIC);
+                    } else {
+                        $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->setValueExplicit(html_entity_decode($value, ENT_QUOTES, 'UTF-8'), \PHPExcel_Cell_DataType::TYPE_STRING);
+                    }
+                    $rRowCount = $rowNo + 4;
+                    $cellName = $sheet->getCellByColumnAndRow($colNo, $rowNo + 4)->getColumn();
+                    $sheet->getStyle($cellName . $rRowCount)->applyFromArray($borderStyle);
+                    $sheet->getDefaultRowDimension()->setRowHeight(18);
+                    $sheet->getColumnDimensionByColumn($colNo)->setWidth(20);
+                    $sheet->getStyleByColumnAndRow($colNo, $rowNo + 5)->getAlignment()->setWrapText(true);
+                    $colNo++;
+                }
+            }
+            
+            $writer = \PHPExcel_IOFactory::createWriter($excel, 'Excel5');
+            $filename = 'Products-Report' . date('d-M-Y-H-i-s') . '.xls';
+            $writer->save(TEMP_UPLOAD_PATH . DIRECTORY_SEPARATOR . $filename);
+            return $filename;
+        }
+        catch (Exception $exc) {
+            return "";
+            error_log("Generate-Products-Report--" . $exc->getMessage());
+            error_log($exc->getTraceAsString());
+        }
+    }
+
     public function fetchAll($parameters)
     {
-        $aColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_voucher_remarks','sales_grand_total'];
-        $orderColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_voucher_remarks','sales_grand_total'];
+        $queryContainer = new Container('query');
+        $aColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_remarks','sales_grand_total'];
+        $orderColumns = ['sales_voucher_no','sales_voucher_date','sales_voucher_account','account_type_name','sales_remarks','sales_grand_total'];
         
         /* Paging */
         $sLimit = "";
@@ -111,6 +280,32 @@ class SalesTable
                 $select->where($sWhere);
         }
         
+        $common=new CommonService();
+        if(isset($parameters['searchDate']) && $parameters['searchDate']!=''){
+            $sDate = explode("to", $parameters['searchDate']);
+            if (isset($sDate[0]) && trim($sDate[0]) != "") {
+                $start_date = $common->dbDateFormat(trim($sDate[0]));
+            }
+            if (isset($sDate[1]) && trim($sDate[1]) != "") {
+                $end_date = $common->dbDateFormat(trim($sDate[1]));
+            }
+        }
+        if (isset($start_date) && trim($start_date) != "" && trim($end_date) != "") {
+			$select->where(["s.sales_voucher_date >='" . $start_date ."'", "s.sales_voucher_date <='" . $end_date."'"]);
+		} else if (isset($start_date) && trim($start_date) != "") {
+			$select->where(["s.sales_voucher_date='" . $start_date."'"]);
+		}	
+        
+        if(isset($parameters['searchSalesAccount']) && $parameters['searchSalesAccount']!='')
+		{
+			$select->where(['s.sales_voucher_sales_account'=>$parameters['searchSalesAccount']]);
+		}
+        
+        if(isset($parameters['searchAccount']) && $parameters['searchAccount']!='')
+		{
+			$select->where(['s.sales_voucher_account'=>$parameters['searchAccount']]);
+		}
+        
         if (isset($sOrder) && $sOrder != "") {
                 $select->order($sOrder);
         }
@@ -123,6 +318,7 @@ class SalesTable
         /* Data set length after filtering */
         $select->reset('limit');
         $select->reset('offset');
+        $queryContainer->salesQuery = $select;
         $rowTotal = $this->tableGateway->selectWith($select);
         $iFilteredTotal = count($rowTotal);
         $output = array(
@@ -138,7 +334,7 @@ class SalesTable
             $row[] = $common->humanDateFormat($aRow->sales_voucher_date);
             $row[] = ucwords(str_replace("-"," ",$aRow->sales_voucher_account));
             $row[] = ucwords($aRow->account_type_name);
-            $row[] = ucwords($aRow->sales_voucher_remarks);
+            $row[] = ucwords($aRow->sales_remarks);
             $row[] = $aRow->sales_grand_total;
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
                         <a class="btn btn-primary" href="/sales/edit/' . base64_encode($aRow->sales_id) . '"><i class="si si-pencil"></i> Edit</a>
@@ -174,8 +370,11 @@ class SalesTable
             'sales_voucher_date' => $common->dbDateFormat($sales->sales_voucher_date),
             'sales_voucher_account' => $sales->sales_voucher_account,
             'sales_voucher_sales_account' => $sales->sales_voucher_sales_account,
-            'sales_voucher_remarks' => $sales->sales_voucher_remarks,
-            'sales_grand_total' => $sales->sales_grand_total
+            'sales_grand_total' => $sales->sales_grand_total,
+            'sales_user_id' => $sales->sales_user_id,
+            'sales_emi' => $sales->sales_emi,
+            'sales_received_type' => $sales->sales_received_type,
+            'sales_remarks' => $sales->sales_remarks
         ];
         $salesId = (int) $sales->sales_id;
         $alertContainer = new Container('alert');

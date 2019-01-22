@@ -15,8 +15,11 @@ $masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $
 $masterMenu.="<li id='nav-main-item'><a id='gold-chit' class='nav-main-link' href=". $this->url('gold-chit', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage GoldChit</span></a></li>";
 
 $entryMenu = "";
-$entryMenu.="<li id='nav-main-item'><a id='sales' class='nav-main-link' href=". $this->url('sales', array('action' => 'index')) ."><span class='nav-main-link-name'>Create Voucher</span></a></li>";
-$entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' href=". $this->url('sales', array('action' => 'view-voucher')) ."><span class='nav-main-link-name'>View Voucher</span></a></li>";
+$entryMenu.="<li id='nav-main-item'><a id='sales' class='nav-main-link' href=". $this->url('sales', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Sales</span></a></li>";
+
+$reportsMenu = "";
+$reportsMenu.="<li id='nav-main-item'><a id='reports-sales' class='nav-main-link' href=". $this->url('reports-sales', array('action' => 'index')) ."><span class='nav-main-link-name'>Sales Report</span></a></li>";
+$reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-link' href=". $this->url('reports-products', array('action' => 'index')) ."><span class='nav-main-link-name'>Products Report</span></a></li>";
 ?>
 <?= $this->doctype() ?>
 <html lang="en">
@@ -45,15 +48,16 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
     <!-- Fonts and Dashmix framework -->
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,400i,600,700">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/dashmix.min.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/alert.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'?>" rel="stylesheet">
+    <script src="<?= $this->basePath() . '/js/jquery3.min.js'?>"></script>
 
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/select2-new.min.css' ?>">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/datatables/dataTables.bootstrap4.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css'?>" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo $this->basePath() . '/assets/plugins/daterangepicker/daterangepicker.css' ?>">
   </head>
   <body>
     <!-- Page Container -->
@@ -95,17 +99,26 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
         <div class="bg-header-dark">
           <div class="content-header bg-white-10">
             <!-- Logo -->
-            <a class="link-fx font-w600 font-size-md text-white" href="/" style=" font-size: 20px; ">
-              <span class="text-white">Jewellery</span>&nbsp;<span class="text-white-75">Shop</span>
+            <a class="link-fx font-w600 font-size-lg text-white" href="/">
+                <span class="smini-visible">
+                    <span class="text-white">J</span><span class="text-white">S</span>
+                </span>
+                <span class="smini-hidden">
+                    <span class="text-white">Jewellery</span><span class="text-white">Shop</span>
+                </span>
             </a>
-            <!-- <div>
+            <!-- <a class="link-fx font-w600 font-size-md text-white" href="/" style=" font-size: 20px; ">
+              <span class="text-white">Jewellery</span>&nbsp;<span class="text-white-75">Shop</span>
+            </a> -->
+            <div>
+                <!-- <a class="js-class-toggle text-white-75 js-class-toggle-enabled" data-class="fa-toggle-off fa-toggle-on" data-toggle="layout" data-action="sidebar_mini_toggle" href="javascript:void(0)"><i class="fa fa-toggle-off" id="sidebar-style-toggler"></i></a>
                 <a class="js-class-toggle text-white-75 js-class-toggle-enabled" data-target="#sidebar-style-toggler" data-class="fa-toggle-off fa-toggle-on" data-toggle="layout" data-action="sidebar_style_toggle" href="javascript:void(0)">
                     <i class="fa fa-toggle-off" id="sidebar-style-toggler"></i>
                 </a>
                 <a class="d-lg-none text-white ml-2" data-toggle="layout" data-action="sidebar_close" href="javascript:void(0)">
                     <i class="fa fa-times-circle"></i>
-                </a>
-            </div> -->
+                </a> -->
+            </div>
             <!-- END Logo -->
           </div>
         </div>
@@ -116,8 +129,9 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
           <ul class="nav-main">
             <li class="nav-main-item">
             <!--  -->
-              <a class="btn btn-hero-sm btn-hero-light" href="/" style="background-color: #dbe4ef;">
-                <i class="si si-pie-chart mr-1"></i>Dashboard
+              <a class="nav-main-link" href="/">
+                <i class="nav-main-link-icon si si-cursor"></i>
+                <span class="nav-main-link-name">Dashboard</span>
                 <!-- <span class="nav-main-link-badge badge badge-pill badge-success">5</span> -->
               </a>
             </li>
@@ -138,6 +152,15 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
               </a>
               <ul class="nav-main-submenu">
                   <?= $entryMenu;?>
+              </ul>
+            </li>
+            <li class="nav-main-item" id="reports">
+              <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu" aria-haspopup="true" aria-expanded="true" href="#">
+                <i class="nav-main-link-icon si si-notebook"></i>
+                <span class="nav-main-link-name ">Reports</span>
+              </a>
+              <ul class="nav-main-submenu">
+                  <?= $reportsMenu;?>
               </ul>
             </li>
           </ul>
@@ -161,6 +184,13 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
 
           <!-- Right Section -->
           <div>
+            <button type="button" class="btn btn-dual" data-toggle="modal" data-target="#modal-block-popin" data-action="side_overlay_toggle">
+                <i class="far fa-fw fa-list-alt"></i>
+                <span>Today Price&nbsp;&nbsp;&nbsp;</span>
+                <span>Gold: ₹<span id="gold">3000</span>&nbsp;&nbsp;</span>
+                <span>Silver: ₹<span id="silver">40</span></span>
+            </button>
+
             <!-- User Dropdown -->
             <div class="dropdown d-inline-block">
               <button type="button" class="btn btn-dual" id="page-header-user-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -181,9 +211,7 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
                 </div>
               </div>
             </div>
-            <!-- <button type="button" class="btn btn-dual" data-toggle="layout" data-action="side_overlay_toggle">
-                <i class="far fa-fw fa-list-alt"></i>
-            </button> -->
+            
             <!-- END User Dropdown -->
           </div>
           <!-- END Right Section -->
@@ -221,7 +249,43 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
       <!-- END Footer -->
     </div>
     <!-- END Page Container -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <div style="display:none" class="modal fade show" id="modal-block-popin" tabindex="-1" role="dialog" aria-labelledby="modal-block-popin" style="display: block; padding-right: 15px;">
+        <div class="modal-dialog modal-dialog-popin" role="document">
+            <div class="modal-content">
+                <div class="block block-themed block-transparent mb-0">
+                    <div class="block-header bg-primary-dark">
+                        <h3 class="block-title">Update Today Price</h3>
+                        <div class="block-options">
+                            <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                                <i class="fa fa-fw fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="block-content">
+                      <form id="priceTable" name="priceTable">
+                        <div class="form-group row">
+                          <label for="vnooiceNo" class="col-md-2 control-label" for="gold_rate">Gold Rate <span class="mandatory">*</span></label>
+                          <div class="col-md-4">
+                              <input type="number" class="form-control isRequired" id="gold_rate" name="gold_rate" placeholder="Gold Rate" title="Please enter the gold price"/>
+                          </div>
+
+                          <label for="vnooiceDate" class="col-md-2 control-label" for="silver_rate">silver Rate <span class="mandatory">*</span></label>
+                          <div class="col-md-4">
+                            <input type="number" class="form-control isRequired" id="silver_rate" name="silver_rate" placeholder="Silver Rate" title="Please enter the silver price"/>
+                          </div>
+                        </div>
+                        <input type="hidden" class="form-control" id="price_id" name="price_id"/>
+                      </form>
+                    </div>
+                    <div class="block-content block-content-full text-right bg-light">
+                        <button type="button" class="btn btn-sm btn-light" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="savePrice();return false;">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="<?= $this->basePath() . '/js/jquery2.min.js'; ?>"></script>
     <script src="<?= $this->basePath() . '/assets/js/alert.js'; ?>"></script>
     <script src="<?= $this->basePath() . '/assets/js/dashmix.core.min.js'; ?>"></script>
     <script src="<?= $this->basePath() . '/assets/js/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js'; ?>"></script>
@@ -249,13 +313,46 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
     <script src="<?= $this->basePath() . '/assets/js/pages/be_forms_wizard.min.js'; ?>"></script>
 
     <script type="text/javascript">
-
+    function savePrice(){
+        flag = deforayValidator.init({
+            formId: 'priceTable'
+        });
+        if(flag){
+            $.blockUI();
+            var gold_rate = $('#gold_rate').val();
+            var silver_rate = $('#silver_rate').val();
+            var price_id = $('#price_id').val();
+            $.post("<?php echo $this->url('sales',array('action'=>'price-update')); ?>",{gold_rate:gold_rate,silver_rate:silver_rate,price_id:price_id},
+            function(data){
+              if(data>0){
+                alert("Sales updated successfully.");
+                location.reload(true);
+                $.unblockUI();
+              }else{
+                alert("Sales not updated!",'err');
+                $.unblockUI();
+              }
+            });
+        }
+    }
+    function viewPrice(){
+      $.post("<?php echo $this->url('sales',array('action'=>'price')); ?>",
+      function(data){
+        var result=data.split('-');
+        document.getElementById("gold").textContent=result[0];
+        document.getElementById("silver").textContent=result[1];
+        document.getElementById("price_id").value=result[2];
+        document.getElementById("gold_rate").value=result[0];
+        document.getElementById("silver_rate").value=result[1];
+      });
+    }
     $(document).ready(function() {
       <?php if(isset($alertContainer->alertMsg) && $alertContainer->alertMsg != "") { ?>
           alert("<?php echo $alertContainer->alertMsg; ?>"); 
           <?php $alertContainer->alertMsg = "";
           unset($alertContainer->alertMsg);
       }?>
+      viewPrice();
     });
     $(function () {
       str=$(location).attr('pathname');
@@ -268,11 +365,12 @@ $entryMenu.="<li id='nav-main-item'><a id='view-voucher' class='nav-main-link' h
       if( splitsUrl[1]=='sales')
       {
           $('#entry').addClass('open');
-          if(splitsUrl[2]=='view-voucher'){
-            $('#'+splitsUrl[2]).addClass('active');
-          }else{
-            $('#'+splitsUrl[1]).addClass('active');
-          }
+          $('#'+splitsUrl[1]).addClass('active');
+      }
+      if( splitsUrl[1]=='reports-sales' || splitsUrl[1]=='reports-products')
+      {
+          $('#reports').addClass('open');
+          $('#'+splitsUrl[1]).addClass('active');
       }
     });
     </script>

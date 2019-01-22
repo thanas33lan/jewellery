@@ -34,4 +34,5 @@ return [
     'Vat',
     'GoldChit',
     'Sales',
+    'Reports',
 ];
