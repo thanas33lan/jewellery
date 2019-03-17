@@ -11,8 +11,8 @@ $masterMenu = "";
 $masterMenu.="<li id='nav-main-item'><a id='user' class='nav-main-link' href=". $this->url('user', array('action' => 'index')) ."><span class='nav-main-link-name'>Admin User Details</span></a></li>";
 $masterMenu.="<li id='nav-main-item'><a id='accounts' class='nav-main-link' href=". $this->url('accounts', array('action' => 'index')) ."><span class='nav-main-link-name'>Accounts Details</span></a></li>";
 $masterMenu.="<li id='nav-main-item'><a id='products' class='nav-main-link' href=". $this->url('products', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Products</span></a></li>";
-$masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $this->url('vat', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Vat</span></a></li>";
-$masterMenu.="<li id='nav-main-item'><a id='gold-chit' class='nav-main-link' href=". $this->url('gold-chit', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage GoldChit</span></a></li>";
+$masterMenu.="<li id='nav-main-item'><a id='vat' class='nav-main-link' href=". $this->url('vat', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage GST</span></a></li>";
+// $masterMenu.="<li id='nav-main-item'><a id='gold-chit' class='nav-main-link' href=". $this->url('gold-chit', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage GoldChit</span></a></li>";
 
 $entryMenu = "";
 $entryMenu.="<li id='nav-main-item'><a id='sales' class='nav-main-link' href=". $this->url('sales', array('action' => 'index')) ."><span class='nav-main-link-name'>Manage Sales</span></a></li>";
@@ -43,10 +43,20 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
       .not-mandatory{
         color:#FFFFFF;
       }
+      input[type=number]::-webkit-inner-spin-button, 
+      input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0; 
+      }
+      .form-control[readonly] {
+        background-color: transparent;
+        opacity: 1;
+      }
     </style>
     <!-- Stylesheets -->
     <!-- Fonts and Dashmix framework -->
-
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,400i,600,700">
 
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/dashmix.min.css'?>" rel="stylesheet">
@@ -58,6 +68,7 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/datatables/dataTables.bootstrap4.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/datatables/buttons-bs4/buttons.bootstrap4.min.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo $this->basePath() . '/assets/plugins/daterangepicker/daterangepicker.css' ?>">
+    <link rel="stylesheet" href="<?php echo $this->basePath() . '/assets/css/deforayModal.css' ?>">
   </head>
   <body>
     <!-- Page Container -->
@@ -237,6 +248,10 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
       </main>
       <!-- END Main Container -->
       <!-- Footer -->
+      <div id="dDiv" class="dialog"> 
+          <div style="text-align:center"><span onclick="closeModal();" style="float:right;clear:both;" class="closeModal"></span></div> 
+          <iframe id="dFrame" src="" style="border:none;" scrolling='yes' marginwidth='0' marginheight='0' frameborder='0' vspace='0' hspace='0' >some problem</iframe> 
+      </div>
       <footer id="page-footer" class="bg-body-light">
         <div class="content py-0">
           <div class="row font-size-sm">
@@ -311,6 +326,7 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
 
     <script src="<?= $this->basePath() . '/assets/js/plugins/jquery-bootstrap-wizard/bs4/jquery.bootstrap.wizard.min.js'; ?>"></script>
     <script src="<?= $this->basePath() . '/assets/js/pages/be_forms_wizard.min.js'; ?>"></script>
+    <script src="<?php echo $this->basePath() . '/assets/js/deforayModal.js'; ?>"></script>
 
     <script type="text/javascript">
     function savePrice(){
@@ -346,6 +362,19 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
         document.getElementById("silver_rate").value=result[1];
       });
     }
+
+    function showModal(url, w, h) {
+        showdefModal('dDiv', w, h);
+        document.getElementById('dFrame').style.height = h + 'px';
+        document.getElementById('dFrame').style.width = w + 'px';
+        document.getElementById('dFrame').src = url;
+    }
+
+    function closeModal() {
+        document.getElementById('dFrame').src = "";
+        hidedefModal('dDiv');
+    }
+
     $(document).ready(function() {
       <?php if(isset($alertContainer->alertMsg) && $alertContainer->alertMsg != "") { ?>
           alert("<?php echo $alertContainer->alertMsg; ?>"); 

@@ -14,11 +14,14 @@ class Sales
     public $products_vat_rate;
     public $products_qty;
     public $products_status;
+    public $products_type_code;
     
     public $account_type_id;
     public $account_type_name;
     public $account_type_status;
     
+    public $account_id;
+    public $account_name_tamil;
     // Table fields
     public $sales_id;
     public $sales_voucher_no;
@@ -27,7 +30,8 @@ class Sales
     public $sales_voucher_sales_account;
     public $sales_grand_total;
     public $sales_user_id;
-    public $sales_emi;
+    public $sales_recived;
+    public $sales_balance;
     public $sales_received_type;
     public $sales_remarks;
     // User Details Table
@@ -44,7 +48,8 @@ class Sales
         $this->sales_voucher_sales_account  = !empty($data['sales_voucher_sales_account']) ? $data['sales_voucher_sales_account'] : null;
         $this->sales_grand_total  = !empty($data['sales_grand_total']) ? $data['sales_grand_total'] : null;
         $this->sales_user_id  = !empty($data['sales_user_id']) ? $data['sales_user_id'] : null;
-        $this->sales_emi  = !empty($data['sales_emi']) ? $data['sales_emi'] : null;
+        $this->sales_recived  = !empty($data['sales_recived']) ? $data['sales_recived'] : null;
+        $this->sales_balance  = !empty($data['sales_balance']) ? $data['sales_balance'] : null;
         $this->sales_received_type  = !empty($data['sales_received_type']) ? $data['sales_received_type'] : null;
         $this->sales_remarks  = !empty($data['sales_remarks']) ? $data['sales_remarks'] : null;
 
@@ -78,6 +83,9 @@ class Sales
         if(isset($data['products_status']) && trim($data['products_status']) != ''){
             $this->products_status  = !empty($data['products_status']) ? $data['products_status'] : null;
         }
+        if(isset($data['products_type_code']) && trim($data['products_type_code']) != ''){
+            $this->products_type_code  = !empty($data['products_type_code']) ? $data['products_type_code'] : null;
+        }
         
         if(isset($data['account_type_id']) && trim($data['account_type_id']) != ''){
             $this->account_type_id  = !empty($data['account_type_id']) ? $data['account_type_id'] : null;
@@ -89,6 +97,13 @@ class Sales
             $this->account_type_status  = !empty($data['account_type_status']) ? $data['account_type_status'] : null;
         }
         
+        if(isset($data['account_name_tamil']) && trim($data['account_name_tamil']) != ''){
+            $this->account_name_tamil  = !empty($data['account_name_tamil']) ? $data['account_name_tamil'] : null;
+        }
+        if(isset($data['account_id']) && trim($data['account_id']) != ''){
+            $this->account_id  = !empty($data['account_id']) ? $data['account_id'] : null;
+        }
+
         if(isset($data['user_id']) && trim($data['user_id']) != ''){
             $this->user_id  = !empty($data['user_id']) ? $data['user_id'] : null;
         }

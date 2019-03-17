@@ -1,10 +1,10 @@
 <div class="bg-body-light">
      <div class="content content-full">
           <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Vat</h1>
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">GST</h1>
                <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                         <a href="<?= $this->url('vat', array('action' => 'index')); ?>"><li class="breadcrumb-item">Vat Details</li></a>
+                         <a href="<?= $this->url('vat', array('action' => 'index')); ?>"><li class="breadcrumb-item">GST Details</li></a>
                          <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
                     </ol>
                </nav>
@@ -16,7 +16,7 @@
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Add Vat Details</h3>
+            <h3 class="block-title">Add GST Details</h3>
             <div class="block-options">
                 <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
             </div>
@@ -29,17 +29,17 @@
                         <div class="col-sm-4">
                             <select class="form-control isRequired" id="vat_slab" name="vat_slab" title="Please select the vat slab" onchange="changeSlab(this.value);">
                                 <option value="">--select--</option>
-                                <option value="vat-1%">VAT 1%</option>
-                                <option value="vat-12.5%">VAT 12.5%</option>
-                                <option value="vat-14.5%">VAT 14.5%</option>
-                                <option value="vat-4%">VAT 4%</option>
-                                <option value="vat-5%">VAT 5%</option>
+                                <option value="GST-5%">GST 5%</option>
+                                <option value="GST-12%">GST 12%</option>
+                                <option value="GST-18%">GST 18%</option>
+                                <option value="GST-28%">GST 28%</option>
+                                <option value="GST-40%">GST 40%</option>
                             </select>
                         </div>
                         
-                        <label class="col-sm-2 col-form-label" for="vat_rate">Vat Rate<span class="mandatory">*</span></label>
+                        <label class="col-sm-2 col-form-label" for="vat_rate">GST Rate</label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control isRequired" id="vat_rate" name="vat_rate" placeholder="Enter the  vat rate" title="Please enter the vat rate">
+                            <input type="text" class="form-control" id="vat_rate" name="vat_rate" placeholder="Enter the  vat rate" title="Please enter the vat rate">
                         </div>
                     </div>
                     
@@ -96,6 +96,6 @@
     function changeSlab(val){
         var str = val.replace("-"," ");
         var $val = str.toUpperCase();
-        $('#vat_rate').val($val);
+        // $('#vat_rate').val($val);
     }
 </script>

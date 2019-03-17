@@ -23,6 +23,11 @@ class SalesTable
         $productsQuery = new Select('products');
         $productsQuery->where(['products_status'=>'active']);
         return $this->tableGateway->selectWith($productsQuery);
+
+        // $select = new Select(['p'=>'products']);
+        // $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
+        // $select->where(['p.products_status'=>'active']);
+        // return $this->tableGateway->selectWith($select);
     }
     
     public function getActiveUsers($search)
@@ -45,16 +50,23 @@ class SalesTable
     
     public function getLastSalesId()
     {
-        $productsQuery = new Select('sales_details');
-        $productsQuery->order('sales_id DESC');
-        return $this->tableGateway->selectWith($productsQuery)->current();
+        $salesQuery = new Select('sales_details');
+        $salesQuery->order('sales_id DESC');
+        return $this->tableGateway->selectWith($salesQuery)->current();
     }
     
     public function getAllAccounts()
     {
-        $productsQuery = new Select('account_type');
-        $productsQuery->where(['account_type_status'=>'active']);
-        return $this->tableGateway->selectWith($productsQuery);
+        $salesQuery = new Select('account_type');
+        $salesQuery->where(['account_type_status'=>'active']);
+        return $this->tableGateway->selectWith($salesQuery);
+    }
+    
+    public function getAllClientAccounts()
+    {
+        $salesQuery = new Select('accounts');
+        $salesQuery->where(['account_status'=>'active']);
+        return $this->tableGateway->selectWith($salesQuery);
     }
 
     public function exportReports($params)
@@ -337,8 +349,9 @@ class SalesTable
             $row[] = ucwords($aRow->sales_remarks);
             $row[] = $aRow->sales_grand_total;
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/sales/edit/' . base64_encode($aRow->sales_id) . '"><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" onclick="deleteSales(' . $aRow->sales_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-sm btn-hero-dark" onclick="showModal(\'/sales/pay/' .base64_encode($aRow->sales_id) . '\',880,540);" href="javascript:void(0);"><i class="fab fa-amazon-pay"></i></a>
+                        <a class="btn btn-sm btn-primary" href="/sales/edit/' . base64_encode($aRow->sales_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-sm btn-danger" onclick="deleteSales(' . $aRow->sales_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -372,7 +385,8 @@ class SalesTable
             'sales_voucher_sales_account' => $sales->sales_voucher_sales_account,
             'sales_grand_total' => $sales->sales_grand_total,
             'sales_user_id' => $sales->sales_user_id,
-            'sales_emi' => $sales->sales_emi,
+            'sales_recived' => $sales->sales_recived,
+            'sales_balance' => $sales->sales_balance,
             'sales_received_type' => $sales->sales_received_type,
             'sales_remarks' => $sales->sales_remarks
         ];
@@ -393,7 +407,20 @@ class SalesTable
             $alertContainer->alertMsg = 'Sales details updated successfully';
         }
     }
-
+    
+    public function saveEmiDetails($salesEmi)
+    {
+        $common = new CommonService();
+        $data = [
+            'sales_grand_total' => $salesEmi->sales_grand_total,
+            'sales_recived' => $salesEmi->sales_recived,
+            'sales_balance' => $salesEmi->sales_balance,
+            'sales_received_type' => $salesEmi->sales_received_type,
+        ];
+        $salesId = (int) $salesEmi->sales_id;
+        return $this->tableGateway->update($data, ['sales_id' => $salesId]);
+    }
+    
     public function deleteSales($params)
     {
         return $this->tableGateway->delete(['sales_id' => (int) $params->sales_id]);

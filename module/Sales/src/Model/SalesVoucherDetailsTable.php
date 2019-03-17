@@ -35,10 +35,11 @@ class SalesVoucherDetailsTable
 
     public function saveSales($sales,$lastId)
     {
-        $common = new CommonService();
+        // \Zend\Debug\Debug::dump($sales);die;
+        $lastInsertedId = 0;
         $n = count($sales->sales_voucher_products_id);
         for($i=0;$i<$n;$i++){
-            $data[] = [
+            $data = [
                 'sales_id' => ($lastId >0)? $lastId:$sales->sales_id,
                 'sales_voucher_products_id' => $sales->sales_voucher_products_id[$i],
                 'sales_voucher_products_tag' => $sales->sales_voucher_products_tag[$i],
@@ -55,14 +56,15 @@ class SalesVoucherDetailsTable
                 'sales_voucher_products_making_charge' => $sales->sales_voucher_products_making_charge[$i],
                 'sales_voucher_products_discount_amount' => $sales->sales_voucher_products_discount_amount[$i],
                 'sales_voucher_products_net_amount' => $sales->sales_voucher_products_net_amount[$i],
-                'sales_voucher_products_narration' => $sales->sales_voucher_products_narration[$i]
+                'sales_voucher_products_narration' => $sales->sales_voucher_products_narration[$i],
+                'return_check' => $sales->return_check[$i]
             ];
-        }
-        
-        for($i=0;$i<$n;$i++){
-            if (0 === (int) $sales->sales_voucher_id[$i]) {
-                $insertResult = $this->tableGateway->insert($data[$i]);
-                return ($insertResult>0)? 1:0;
+            if (0 == (int) $sales->sales_voucher_id[$i]) {
+                $this->tableGateway->insert($data);
+                $lastInsertedId = $this->tableGateway->lastInsertValue;
+            }
+            if (0 != (int) $sales->sales_voucher_id[$i]) {
+                $updateResult = $this->tableGateway->update($data, [ 'sales_voucher_id' => $sales->sales_voucher_id[$i] ]);
             }
         }
         $updateResult = 0;
@@ -72,12 +74,9 @@ class SalesVoucherDetailsTable
                 $updateResult = $this->tableGateway->delete(['sales_voucher_id' => (int) $delete]);
             }
         }
-        for($i=0;$i<$n;$i++){
-            if (0 != (int) $sales->sales_voucher_id[$i]) {
-                $updateResult = $this->tableGateway->update($data[$i], [ 'sales_voucher_id' => $sales->sales_voucher_id[$i] ]);
-            }
+        if($lastInsertedId > 0 || $updateResult > 0){
+            return 1;
         }
-        return ($updateResult>0)? 1:0;
     }
 
     public function deleteSales($params)

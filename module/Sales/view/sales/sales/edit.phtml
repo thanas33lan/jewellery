@@ -11,15 +11,21 @@
         $vNo = 'VN000001';
     }
     $productLists = '';
+    $productCode = '';
     $voucherLists = array();
     $productArray = array();
-    
+    $productCodeArray = array();
+    $dot = 0;
     foreach($salesVoucher as $key=>$voucher){
-        $voucherLists[$key] = $voucher;
+        $voucherLists[] = $voucher;
+        $dot++;
     }
     foreach($productList as $key=>$product){
         $productArray[$key] = $product;
+        $productCodeArray[$key] = $product;
         $productLists.="<option value='$product->products_id' data-tag='$product->products_tag' data-wastage='$product->products_wastage' data-charge='$product->products_charge' data-rate='$product->products_rate' data-vat='$product->products_vat' data-vat-rate='$product->products_vat_rate' data-qty='$product->products_qty'>$product->products_name</option>";
+
+        $productCode.="<option value='$product->products_tag' data-id='$product->products_id' data-txt='$product->products_name' data-wastage='$product->products_wastage' data-charge='$product->products_charge' data-rate='$product->products_rate' data-vat='$product->products_vat' data-vat-rate='$product->products_vat_rate' data-qty='$product->products_qty'>$product->products_tag</option>";
     }
 ?>
 <style>
@@ -32,6 +38,10 @@
         z-index: 1;
         background: white;
     }
+    .form-control[readonly] {
+        background-color: transparent;
+        opacity: 1;
+      }
 </style>
 <div class="bg-body-light">
     <div class="content content-full">
@@ -96,8 +106,8 @@
                         <div class="col-md-4">
                             <select class="form-control isRequired" id="sales_voucher_sales_account" name="sales_voucher_sales_account" title="Please choose sales account">
                                 <option value="">--select--</option>
-                                <?php foreach($accountsList as $account){?>
-                                    <option value="<?php echo $account->account_type_id;?>" <?php echo ($account->account_type_id == $sales->sales_voucher_sales_account )?'selected=selected':'';?>><?php echo $account->account_type_name;?></option>
+                                <?php foreach($accountsClientList as $account){?>
+                                    <option value="<?php echo $account->account_id;?>" <?php echo ($account->account_id == $sales->sales_voucher_sales_account )?'selected=selected':'';?>><?php echo $account->account_name_tamil;?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -108,14 +118,15 @@
                             <input type="number" value="<?php echo $sales->sales_grand_total;?>" class="form-control" id="sales_grand_total" name="sales_grand_total" title="Please enter total value" readonly/>
                         </div>
                         
-                        <label for="sales_emi" class="col-md-2 control-label" for="sales_emi">Amount Received </label>
+                        <label for="sales_emi" class="col-md-2 control-label" for="sales_recived">Amount Received </label>
                         <div class="col-md-4">
-                            <input type="number" value="<?php echo $sales->sales_emi;?>" class="form-control isRequired" id="sales_emi" name="sales_emi" title="Please enter emi amount"/>
+                            <input type="number" value="<?php echo $sales->sales_recived;?>" class="form-control isRequired" id="sales_recived" name="sales_recived" title="Please enter emi amount" onchange="updatePay();"/>
+                            <input type="hidden"  value="<?php echo $sales->sales_recived; ?>" class="form-control" id="sales_recived_old" name="sales_recived_old" readonly/>
                         </div>
                         
                     </div>
                     <div class="form-group row">
-                        <label for="sales_user_id" class="col-md-2 control-label" for="sales_user_id">User <span class="mandatory">*</span></label>
+                        <!-- <label for="sales_user_id" class="col-md-2 control-label" for="sales_user_id">User <span class="mandatory">*</span></label>
                         <div class="col-md-4">
                             <select class="form-control isRequired" id="sales_user_id" name="sales_user_id" title="Please choose user">
                                 <option value="">--select--</option>
@@ -123,7 +134,7 @@
                                     <option value="<?php echo $user->user_id;?>" <?php echo ($user->user_id == $sales->sales_user_id )?'selected=selected':'';?>><?php echo $user->name;?></option>
                                 <?php } ?>
                             </select>
-                        </div>
+                        </div> -->
                         
                         <label for="sales_received_type" class="col-md-2 control-label" for="sales_user_id">Received Type <span class="mandatory">*</span></label>
                         <div class="col-md-4">
@@ -134,6 +145,10 @@
                                 <option value="online" <?php echo($sales->sales_received_type == 'online' )?'selected="selected"':'';?>>Online</option>
                                 <option value="insurance" <?php echo($sales->sales_received_type == 'insurance' )?'selected="selected"':'';?>>Insurance</option>
                             </select>
+                        </div>
+                        <label for="sales_emi" class="col-md-2 control-label" for="sales_balance">Amount Balance </label>
+                        <div class="col-md-4">
+                            <input type="number"  value="<?php echo $sales->sales_balance; ?>" class="form-control" id="sales_balance" name="sales_balance" title="Please enter balance amount" readonly/>
                         </div>
                     </div>
                     
@@ -171,7 +186,23 @@
                                 $key++;
                                 ?>
                                 <tr>
-                                    <td align="center" style="vertical-align:middle;width:95px;height: 65px;display:inline-block;"><a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="insRow();"><i class="fa fa-plus"></i></a>&nbsp;<a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="removeAttributeRow(this.parentNode.parentNode);dleteVoucher(<?php echo $voucher->sales_voucher_id;?>);"><i class="fa fa-minus"></i></a></td>
+                                    <td align="center" style="vertical-align:middle;width:95px;height: 100px;display:inline-block;">
+                                        <a class="btn btn-sm btn-primary" href="javascript:void(0);" onclick="insRow();"><i class="fa fa-plus"></i></a>&nbsp;
+                                        <a class="btn btn-sm btn-danger" href="javascript:void(0);" onclick="removeAttributeRow(this.parentNode.parentNode);dleteVoucher(<?php echo $voucher->sales_voucher_id;?>);"><i class="fa fa-minus"></i></a>
+                                        <div class="custom-control custom-checkbox custom-control-inline custom-control-primary" style=" top: 15px; ">
+                                            <input type="checkbox" class="custom-control-input" id="returnCheck<?php echo $key;?>" name="returnCheck[]" <?php echo ($voucher->return_check == 'on')?'checked':'';?> onclick="checkedReturn(<?php echo $key;?>);updateTotalPrice();">
+                                            <label class="custom-control-label" for="returnCheck<?php echo $key;?>" onclick="checkedReturn(<?php echo $key;?>);updateTotalPrice();">Return</label>
+                                            <input type="hidden" name="return_check[]" value="<?php echo $voucher->return_check;?>" id="return_check<?php echo $key;?>">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <select name="sales_voucher_products_tag[]" id="sales_voucher_products_tag<?php echo $key;?>" class="select2 input-width form-control sales_voucher_products_id isRequired" title="Please enter Product" onchange="checkExistProduct(1,'id')">
+                                            <option value="">-- Select --</option>
+                                            <?php foreach($productCodeArray as $products){?>
+                                                <option value='<?php echo $products->products_tag;?>' data-id="<?php echo $products->products_id;?>" data-tag='<?php echo $products->products_tag;?>' data-wastage='<?php echo $products->products_wastage;?>' data-charge='<?php echo $products->products_charge;?>' data-rate='<?php echo $products->products_rate;?>' data-vat='<?php echo $products->products_vat;?>' data-vat-rate='<?php echo $products->products_vat_rate;?>' data-qty='<?php echo $products->products_qty;?>' <?php echo ($products->products_tag == $voucher->sales_voucher_products_tag )?'selected=selected':'';?>><?php echo $products->products_tag;?></option>
+                                            <?php }?>
+                                        </select>
+                                    </td>
                                     <td><input type="hidden" id="sales_voucher_id" name="sales_voucher_id[]" value="<?php echo $voucher->sales_voucher_id;?>" />
                                         <select name="sales_voucher_products_id[]" id="sales_voucher_products_id<?php echo $key;?>" class="select2 input-width form-control sales_voucher_products_id isRequired" title="Please enter Product" onchange="checkExistProduct('<?php echo $key;?>')">
                                             <option value="">-- Select --</option>
@@ -180,7 +211,6 @@
                                             <?php }?>
                                         </select>
                                     </td>
-                                    <td><input type="text" value="<?php echo $voucher->sales_voucher_products_tag;?>" class="form-control input-width isRequired" name="sales_voucher_products_tag[]" id="sales_voucher_products_tag<?php echo $key;?>" title="Please enter tag" readonly/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_qty;?>" class="form-control input-width isRequired" name="sales_voucher_products_qty[]" id="sales_voucher_products_qty<?php echo $key;?>" title="Please enter qty" onchange='updateTotalPrice();'/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_weight;?>" class="form-control input-width" name="sales_voucher_products_weight[]" id="sales_voucher_products_weight<?php echo $key;?>" title="Please enter weight"/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_purity;?>" class="form-control input-width" name="sales_voucher_products_purity[]" id="sales_voucher_products_purity<?php echo $key;?>" title="Please enter purity"/></td>
@@ -219,18 +249,30 @@
 <script type="text/javascript">
     var tableRowId = document.getElementById("salesTable").rows.length;
     var delete_id = [];
+    var receivedAmountOld = Math.round($('#sales_recived_old').val());
+    
+    function updatePay(){
+        var totalAmount = Math.round($('#sales_grand_total').val());
+        var receivedAmount = Math.round($('#sales_recived').val());
+        var salesBalance = Math.round($('#sales_balance').val());
+        receivedAmount += receivedAmountOld;
+        $('#sales_recived').val(receivedAmount)
+        var sales_balance = totalAmount - receivedAmount;
+        $('#sales_balance').val(parseFloat(sales_balance).toFixed(2));
+    }
+
     $(document).ready(function() {
         removeAttributeRow();
         $("#page-container").removeClass('sidebar-o');
         $("#page-container").addClass('sidebar-o-xs');
         for(i=1;i<=tableRowId;i++){
-            $("#sales_voucher_products_id"+i).select2({
-                placeholder: "Enter product name",
-                width:'200px',
-                height:'50px',
-                allowClear:true,
-                maximumSelectionLength: 2
-            });
+            // $("#sales_voucher_products_id"+i).select2({
+            //     placeholder: "Enter product name",
+            //     width:'200px',
+            //     height:'50px',
+            //     allowClear:true,
+            //     maximumSelectionLength: 2
+            // });
         }
         $("#sales_voucher_account").select2({
             placeholder: "Enter account",
@@ -279,12 +321,12 @@
         var p = a.insertCell(14);
         var q = a.insertCell(15);
         var r = a.insertCell(16);
-        b.setAttribute("style","vertical-align:middle;display:inline-block;width:95px;height: 65px;");
+        b.setAttribute("style","vertical-align:middle;display:inline-block;width:95px;height: 100px;");
         tableRowId++;
 
-        b.innerHTML = "<a class='btn btn-sm btn-primary' href='javascript:void(0);' onclick='insRow();'><i class='fa fa-plus'></i></a>&nbsp;<a class='btn btn-sm btn-danger' href='javascript:void(0);' onclick='removeAttributeRow(this.parentNode.parentNode);'><i class='fa fa-minus'></i></a>";
+        b.innerHTML = "<a class='btn btn-sm btn-primary' href='javascript:void(0);' onclick='insRow();'><i class='fa fa-plus'></i></a>&nbsp;<a class='btn btn-sm btn-danger' href='javascript:void(0);' onclick='removeAttributeRow(this.parentNode.parentNode);'><i class='fa fa-minus'></i></a><div class='custom-control custom-checkbox custom-control-inline custom-control-primary' style=' top: 15px; '><input type='checkbox' class='custom-control-input' id='returnCheck" + tableRowId + "' name='returnCheck[]' onclick='checkedReturn(" + tableRowId + ");updateTotalPrice();'><label class='custom-control-label' for='returnCheck" + tableRowId + "' onclick='checkedReturn(" + tableRowId + ");updateTotalPrice();'>Return</label><input type='hidden' name='return_check[]' value='off' id='return_check" + tableRowId + "'></div>";
+        c.innerHTML = "<select name='sales_voucher_products_tag[]' id='sales_voucher_products_tag" + tableRowId + "' class='select2 input-width form-control sales_voucher_products_id isRequired' title='Please enter Product' onchange='checkExistProduct(" + tableRowId + ","+tag+")'><option value=''>-- Select --</option><?php echo $productCode;?></select>";
         c.innerHTML = "<select name='sales_voucher_products_id[]' id='sales_voucher_products_id" + tableRowId + "' class='select2 input-width form-control sales_voucher_products_id isRequired' title='Please enter Product' onchange='checkExistProduct(" + tableRowId + ")'><option value=''>-- Select --</option><?php echo $productLists;?></select>";
-        d.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_tag[]' id='sales_voucher_products_tag" + tableRowId + "' title='Please enter tag' readonly/>";
         e.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_qty[]' id='sales_voucher_products_qty" + tableRowId + "' title='Please enter qty' onchange='updateTotalPrice();'/>";
         f.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_weight[]' id='sales_voucher_products_weight" + tableRowId + "' title='Please enter weight'/>";
         g.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_purity[]' id='sales_voucher_products_purity" + tableRowId + "' title='Please enter purity'/>";
@@ -300,11 +342,11 @@
         q.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_net_amount[]' id='sales_voucher_products_net_amount" + tableRowId + "' title='Please enter net amount' onchange='updateTotalPrice();'/>";
         r.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_narration[]' id='sales_voucher_products_narration" + tableRowId + "' title='Please enter narration'/>";
         $(a).fadeIn(800);
-        $("#sales_voucher_products_id"+tableRowId).select2({
-            placeholder: "Enter product name",
-            width:'200px',
-            allowClear:true,
-        });
+        // $("#sales_voucher_products_id"+tableRowId).select2({
+        //     placeholder: "Enter product name",
+        //     width:'200px',
+        //     allowClear:true,
+        // });
         tableRowId++;
     }
 
@@ -324,20 +366,45 @@
         });
     }
 
-    function updatePrice(rowId)
-    {
+    function checkedReturn(rowId){
+        if($('#returnCheck'+rowId).prop("checked") == true){
+            $('#return_check'+rowId).val('on');
+        }else{
+            $('#return_check'+rowId).val('off');
+        }
+    }
+
+    function updatePrice(rowId){
         var prdSelection = $("#sales_voucher_products_id"+rowId).val();
         if(prdSelection!=''){
-            $("#sales_voucher_products_tag"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-tag'));
+            var ptag = $("#sales_voucher_products_id"+rowId).find(':selected').attr('data-tag');
+            // Set selected 
+            $('#sales_voucher_products_tag'+rowId).val(ptag);
             $("#sales_voucher_products_qty"+rowId).val('1');
             $("#sales_voucher_products_wastage"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-wastage'));
             $("#sales_voucher_products_rate"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate'));
             $("#sales_voucher_products_vat"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-vat'));
             $("#sales_voucher_products_vat_amount"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-vat-rate'));
-            $("#sales_voucher_products_making_charge"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-charge'));
+            // $("#sales_voucher_products_making_charge"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-charge'));
             updateTotalPrice();
         }
     }
+
+    function updateTagPrice(rowId){
+            var prdCodeSelection = $("#sales_voucher_products_tag"+rowId).val();
+            if(prdCodeSelection!=''){
+                var pid = $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-id');
+                // Set selected 
+                $('#sales_voucher_products_id'+rowId).val(pid);
+                $("#sales_voucher_products_qty"+rowId).val('1');
+                $("#sales_voucher_products_wastage"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-wastage'));
+                $("#sales_voucher_products_rate"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate'));
+                $("#sales_voucher_products_vat"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-vat'));
+                $("#sales_voucher_products_vat_amount"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-vat-rate'));
+                // $("#sales_voucher_products_making_charge"+rowId).val($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-charge'));
+                updateTotalPrice();
+            }
+        }
 
     function updateTotalPrice()
     {
@@ -346,9 +413,11 @@
         // var wastageTotal = 0;
         // var lineTotal = 0;
         var netAmount = document.getElementsByName("sales_voucher_products_net_amount[]");
+        var retunCheck = document.getElementsByName("return_check[]");
         var unitPrice = document.getElementsByName("sales_voucher_products_rate[]");
         var qty = document.getElementsByName("sales_voucher_products_qty[]");
         
+        var weightRate = document.getElementsByName("sales_voucher_products_weight[]"); 
         var vatPrice = document.getElementsByName("sales_voucher_products_vat_amount[]");
         var discountPrice = document.getElementsByName("sales_voucher_products_discount_amount[]");
         var additionalPrice = document.getElementsByName("sales_voucher_products_additional_rate[]");
@@ -360,6 +429,10 @@
             var subTotal = 0;
             var wastageTotal = 0;
             var lineTotal = 0;
+
+            grossAmt += (((weightRate[i].value!='' && weightRate[i].value!=0)?parseFloat(weightRate[i].value):parseFloat(0))+((((additionalPrice[i].value!='' && additionalPrice[i].value!=0)?parseFloat(additionalPrice[i].value):parseFloat(0))*((unitPrice[i].value!='' && unitPrice[i].value!=0)?parseFloat(unitPrice[i].value):parseFloat(0)))));
+                
+            grossPrice[i].value = grossAmt;
             if(qty[i].value == 0){
                 // alert("Sorry! You can not add ZERO quantity.",'err')
                 qty[i].value = 1;
@@ -381,27 +454,70 @@
             if(discountPrice[i].value != '' && discountPrice[i].value != 0){
                 lineTotal = netAmount[i].value - discountPrice[i].value;
             }
-            netAmount[i].value = parseFloat(lineTotal).toFixed(2);
+            var grossp = (grossPrice[i].value!='' && grossPrice[i].value!=0)?parseFloat(grossPrice[i].value):parseFloat(0);
+            var vatp = (vatPrice[i].value!='' && vatPrice[i].value!=0)?parseFloat(vatPrice[i].value):parseFloat(0);
+            var makp = (makingPrice[i].value!='' && makingPrice[i].value!=0)?parseFloat(makingPrice[i].value):parseFloat(0);
+            var discp = (discountPrice[i].value!='' && discountPrice[i].value!=0)?parseFloat(discountPrice[i].value):parseFloat(0);
+            
+            var netp = ((grossp + vatp + makp) - discp)
+            
+            if(retunCheck[i].value == 'on'){
+                netAmount[i].value = parseFloat(0).toFixed(2);
+            }else if(retunCheck[i].value == 'off'){
+                netAmount[i].value = parseFloat(lineTotal).toFixed(2);
+            }
             grandTotal += parseFloat(netAmount[i].value);
         }
         var roundGrandTotal = Math.round(grandTotal);
         document.getElementById('sales_grand_total').value = roundGrandTotal.toFixed(2);
+        
+        var totalAmount = Math.round($('#sales_grand_total').val());
+        var receivedAmount = Math.round($('#sales_recived').val());
+        var salesBalance = Math.round($('#sales_balance').val());
+        var sales_balance = totalAmount - receivedAmount;
+        $('#sales_balance').val(parseFloat(sales_balance).toFixed(2));
     }
 
-    function checkExistProduct(rowId)
-    {
-        var itemId = document.getElementById("sales_voucher_products_id"+rowId).value;
-        var itemCount = document.getElementsByName("sales_voucher_products_id[]");
-        var itemLength=itemCount.length-1;
-        var k=0;
-        for (i = 0;  i <= itemLength; i++) {
-            if (itemId == itemCount[i].value) {
-                k++;
-            }
-        }
-        if (k>1) {
-            alert("Product name already added..!!",'err');
-            $("#sales_voucher_products_id"+rowId).val('');
+    function checkExistProduct(rowId,flag) {
+        // var itemId = document.getElementById("sales_voucher_products_id"+rowId).value;
+        // var itemTag = document.getElementById("sales_voucher_products_tag"+rowId).value;
+
+        // var itemCount = document.getElementsByName("sales_voucher_products_id[]");
+        // var itemTagCount = document.getElementsByName("sales_voucher_products_tag[]");
+        
+        // rl = document.getElementById("salesTable").rows.length;
+        
+        // var itemLength=itemCount.length-1;
+        // var itemTagLength=itemTagCount.length-1;
+        
+        // var k=0;
+        // var m=0;
+        
+        // for (i = 0;  i <= itemLength; i++) {
+        //     if(i != rowId){
+        //         if (itemId == itemCount[i].value) {
+        //             k++;
+        //         }
+        //     }
+        // }
+        // for (j = 0;  j <= itemTagLength; j++) {
+        //     if(j != rowId){
+        //         if (itemTag == itemTagCount[j].value) {
+        //             m++;
+        //         }
+        //     }
+        // }
+        // if (k>1) {
+        //     alert("Product already added..!!",'err');
+        //     $("#sales_voucher_products_id"+rowId).val('');
+        //     $("#sales_voucher_products_tag"+rowId).val('');
+        // }else if(m > 1){
+        //     alert("Product code already added..!!",'err');
+        //     $("#sales_voucher_products_id"+rowId).val('');
+        //     $("#sales_voucher_products_tag"+rowId).val('');
+        // }
+        if(flag == 'tag'){
+            updateTagPrice(rowId);
         }else{
             updatePrice(rowId);
         }
