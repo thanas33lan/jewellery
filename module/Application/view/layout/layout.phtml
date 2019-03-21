@@ -54,11 +54,22 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
         background-color: transparent;
         opacity: 1;
       }
+      .visible-xs-block{
+        display: none;
+      }
+      @media (max-width: 767px){
+        .hidden-xs {
+            display: none !important;
+        }
+        .visible-xs-block {
+            display: block!important;
+        }
+      }
     </style>
     <!-- Stylesheets -->
     <!-- Fonts and Dashmix framework -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,400i,600,700">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/dashmix.min.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/css/alert.css'?>" rel="stylesheet">
     <link rel="stylesheet" href="<?= $this->basePath() . '/assets/js/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css'?>" rel="stylesheet">
@@ -122,13 +133,12 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
               <span class="text-white">Jewellery</span>&nbsp;<span class="text-white-75">Shop</span>
             </a> -->
             <div>
-                <!-- <a class="js-class-toggle text-white-75 js-class-toggle-enabled" data-class="fa-toggle-off fa-toggle-on" data-toggle="layout" data-action="sidebar_mini_toggle" href="javascript:void(0)"><i class="fa fa-toggle-off" id="sidebar-style-toggler"></i></a>
                 <a class="js-class-toggle text-white-75 js-class-toggle-enabled" data-target="#sidebar-style-toggler" data-class="fa-toggle-off fa-toggle-on" data-toggle="layout" data-action="sidebar_style_toggle" href="javascript:void(0)">
                     <i class="fa fa-toggle-off" id="sidebar-style-toggler"></i>
                 </a>
                 <a class="d-lg-none text-white ml-2" data-toggle="layout" data-action="sidebar_close" href="javascript:void(0)">
                     <i class="fa fa-times-circle"></i>
-                </a> -->
+                </a>
             </div>
             <!-- END Logo -->
           </div>
@@ -190,17 +200,20 @@ $reportsMenu.="<li id='nav-main-item'><a id='reports-products' class='nav-main-l
               <i class="fa fa-fw fa-bars"></i>
             </button>
             <!-- END Toggle Sidebar -->
+            <button type="button" class="btn btn-dual hidden-xs" data-toggle="modal" data-target="#modal-block-popin" data-action="side_overlay_toggle" style=" border: 1px solid #fff70b; ">
+                <!-- <i class="far fa-fw fa-list-alt"></i> -->
+                <span>Today Price&nbsp;&nbsp;&nbsp;</span>
+                <span>Gold: &nbsp;&nbsp;₹&nbsp;<span id="gold">3000</span>&nbsp;&nbsp;</span>
+                <span>Silver: &nbsp;&nbsp;₹&nbsp;<span id="silver">40</span></span>
+            </button>
           </div>
+            <button type="button" class="btn-dual visible-xs-block" data-toggle="modal" data-target="#modal-block-popin" data-action="side_overlay_toggle" style=" border: 1px solid #fff70b;border-radius: 5px; ">
+              <span><i class="fa fa-inr"></i>&nbsp;&nbsp;VIEW PRICE</span>
+            </button>
           <!-- END Left Section -->
 
           <!-- Right Section -->
           <div>
-            <button type="button" class="btn btn-dual" data-toggle="modal" data-target="#modal-block-popin" data-action="side_overlay_toggle">
-                <i class="far fa-fw fa-list-alt"></i>
-                <span>Today Price&nbsp;&nbsp;&nbsp;</span>
-                <span>Gold: ₹<span id="gold">3000</span>&nbsp;&nbsp;</span>
-                <span>Silver: ₹<span id="silver">40</span></span>
-            </button>
 
             <!-- User Dropdown -->
             <div class="dropdown d-inline-block">

@@ -23,11 +23,6 @@ class SalesTable
         $productsQuery = new Select('products');
         $productsQuery->where(['products_status'=>'active']);
         return $this->tableGateway->selectWith($productsQuery);
-
-        // $select = new Select(['p'=>'products']);
-        // $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
-        // $select->where(['p.products_status'=>'active']);
-        // return $this->tableGateway->selectWith($select);
     }
     
     public function getActiveUsers($search)

@@ -37,7 +37,7 @@
                             <select class="form-control isRequired" id="products_type_id" name="products_type_id" placeholder="Enter the products type" title="Please enter the products type">
                                 <option value="">--select--</option>
                                 <?php foreach($productsType as $type){?>
-                                    <option value="<?php echo $type->products_type_id;?>"><?php echo $type->products_type_name;?></option>
+                                    <option value="<?php echo $type->products_type_code;?>"><?php echo $type->products_type_name;?></option>
                                 <?php }?>
                             </select>
                         </div>

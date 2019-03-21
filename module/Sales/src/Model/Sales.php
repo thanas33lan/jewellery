@@ -16,6 +16,9 @@ class Sales
     public $products_status;
     public $products_type_code;
     
+    public $products_type_id;
+    public $products_type_name;
+    
     public $account_type_id;
     public $account_type_name;
     public $account_type_status;
@@ -52,7 +55,14 @@ class Sales
         $this->sales_balance  = !empty($data['sales_balance']) ? $data['sales_balance'] : null;
         $this->sales_received_type  = !empty($data['sales_received_type']) ? $data['sales_received_type'] : null;
         $this->sales_remarks  = !empty($data['sales_remarks']) ? $data['sales_remarks'] : null;
-
+        
+        
+        if(isset($data['products_type_id']) && trim($data['products_type_id']) != ''){
+            $this->products_type_id  = !empty($data['products_type_id']) ? $data['products_type_id'] : null;
+        }
+        if(isset($data['products_type_name']) && trim($data['products_type_name']) != ''){
+            $this->products_type_name  = !empty($data['products_type_name']) ? $data['products_type_name'] : null;
+        }
         if(isset($data['products_id']) && trim($data['products_id']) != ''){
             $this->products_id  = !empty($data['products_id']) ? $data['products_id'] : null;
         }

@@ -20,6 +20,7 @@ class Products
     public $products_status;
     
     public $products_type_name;
+    public $products_type_code;
 
     public function exchangeArray(array $data)
     {
@@ -39,5 +40,6 @@ class Products
         $this->products_status  = !empty($data['products_status']) ? $data['products_status'] : null;
         
         $this->products_type_name = !empty($data['products_type_name']) ? $data['products_type_name'] : null;
+        $this->products_type_code = !empty($data['products_type_code']) ? $data['products_type_code'] : null;
     }
 }

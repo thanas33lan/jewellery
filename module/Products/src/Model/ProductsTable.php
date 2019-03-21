@@ -29,8 +29,6 @@ class ProductsTable
         {
             if($params->type == 'excel'){
                 return $this->exportExcel();
-            }else{
-                
             }
         }
     }
@@ -46,20 +44,6 @@ class ProductsTable
             \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
-            
-            if(isset($params['searchDate']) && trim($params['searchDate'])!=""){
-                $start_date = '';
-                $end_date = '';
-                
-                $sDate = explode("to",$params['searchDate']);
-                if (isset($sDate[0]) && trim($sDate[0]) != "") {
-                    $start_date = $common->dateFormat(trim($sDate[0]));
-                }
-                if (isset($sDate[1]) && trim($sDate[1]) != "") {
-                    $end_date = $common->dateFormat(trim($sDate[1]));
-                }
-                $query = $query->where(array("s.invoice_date >='" . $start_date ."'", "s.invoice_date <='" . $end_date."'"));
-            }
             
             $sResult = $this->tableGateway->selectWith($queryContainer->productQuery);
             
@@ -181,7 +165,6 @@ class ProductsTable
     {
         $queryContainer = new Container('query');
         $aColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
-        $orderColumns = ['products_tag','products_type_name','products_name','products_wastage','products_rate','products_vat','products_qty'];
         
         /* Paging */
         $sLimit = "";
@@ -244,7 +227,7 @@ class ProductsTable
         * Get data to display
         */
         $select = new Select(['p'=>'products']);
-        $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_id',['products_type_name']);
+        $select->join(['pt'=>'products_type'],'p.products_type_id = pt.products_type_code',['products_type_name']);
         // \Zend\Debug\Debug::dump($select);die;
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
