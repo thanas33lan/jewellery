@@ -212,9 +212,9 @@
                                         </select>
                                     </td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_qty;?>" class="form-control input-width isRequired" name="sales_voucher_products_qty[]" id="sales_voucher_products_qty<?php echo $key;?>" title="Please enter qty" onkeyup='updateTotalPrice();'/></td>
-                                    <td><input type="text" value="<?php echo $voucher->sales_voucher_products_weight;?>" class="form-control input-width" name="sales_voucher_products_weight[]" id="sales_voucher_products_weight<?php echo $key;?>" title="Please enter weight"  onchange='updateTotalPrice();unitPrice(<?php echo $key;?>);'/></td>
+                                    <td><input type="text" value="<?php echo $voucher->sales_voucher_products_weight;?>" class="form-control input-width" name="sales_voucher_products_weight[]" id="sales_voucher_products_weight<?php echo $key;?>" title="Please enter weight"  onkeyup='updateTotalPrice();unitPrice(<?php echo $key;?>);'/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_purity;?>" class="form-control input-width" name="sales_voucher_products_purity[]" id="sales_voucher_products_purity<?php echo $key;?>" title="Please enter purity" onkeyup='updateTotalPrice();'/></td>
-                                    <td><input type="text" value="<?php echo $voucher->sales_voucher_products_wastage;?>" class="form-control input-width isRequired" name="sales_voucher_products_wastage[]" id="sales_voucher_products_wastage<?php echo $key;?>" title="Please enter wastage"  onchange='updateTotalPrice();unitPrice(<?php echo $key;?>);'/></td>
+                                    <td><input type="text" value="<?php echo $voucher->sales_voucher_products_wastage;?>" class="form-control input-width isRequired" name="sales_voucher_products_wastage[]" id="sales_voucher_products_wastage<?php echo $key;?>" title="Please enter wastage"  onkeyup='updateTotalPrice();unitPrice(<?php echo $key;?>);'/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_wastage_weight;?>" class="form-control input-width" name="sales_voucher_products_wastage_weight[]" id="sales_voucher_products_wastage_weight<?php echo $key;?>" title="Please enter wastage weight"/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_rate;?>" class="form-control input-width isRequired" name="sales_voucher_products_rate[]" id="sales_voucher_products_rate<?php echo $key;?>" title="Please enter rate" onkeyup='updateTotalPrice();'/></td>
                                     <td><input type="text" value="<?php echo $voucher->sales_voucher_products_additional_rate;?>" class="form-control input-width" name="sales_voucher_products_additional_rate[]" id="sales_voucher_products_additional_rate<?php echo $key;?>" title="Please enter addiotional rate" onkeyup='updateTotalPrice();'/></td>
@@ -340,9 +340,9 @@
         c.innerHTML = "<select name='sales_voucher_products_tag[]' id='sales_voucher_products_tag" + tableRowId + "' class='select2 input-width form-control sales_voucher_products_id isRequired' title='Please enter Product' onchange='checkExistProduct(" + tableRowId + ","+tag+")'><option value=''>-- Select --</option><?php echo $productCode;?></select>";
         d.innerHTML = "<select name='sales_voucher_products_id[]' id='sales_voucher_products_id" + tableRowId + "' class='select2 input-width form-control sales_voucher_products_id isRequired' title='Please enter Product' onchange='checkExistProduct(" + tableRowId + ","+id+")'><option value=''>-- Select --</option><?php echo $productLists;?></select>";
         e.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_qty[]' id='sales_voucher_products_qty" + tableRowId + "' title='Please enter qty' onkeyup='updateTotalPrice();'/>";
-        f.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_weight[]' id='sales_voucher_products_weight" + tableRowId + "' title='Please enter weight' onchange='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
+        f.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_weight[]' id='sales_voucher_products_weight" + tableRowId + "' title='Please enter weight' onkeyup='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
         g.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_purity[]' id='sales_voucher_products_purity" + tableRowId + "' title='Please enter purity' onkeyup='updateTotalPrice();'/>";
-        h.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_wastage[]' id='sales_voucher_products_wastage" + tableRowId + "' title='Please enter wastage' onchange='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
+        h.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_wastage[]' id='sales_voucher_products_wastage" + tableRowId + "' title='Please enter wastage' onkeyup='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
         i.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_wastage_weight[]' id='sales_voucher_products_wastage_weight" + tableRowId + "' title='Please enter wastage weight'/>";
         j.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_rate[]' id='sales_voucher_products_rate" + tableRowId + "' title='Please enter rate' onkeyup='updateTotalPrice();'/>";
         k.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_additional_rate[]' id='sales_voucher_products_additional_rate" + tableRowId + "' title='Please enter addiotional rate' onkeyup='updateTotalPrice();'/>";
@@ -407,12 +407,11 @@
             updateTotalPrice();
         }
     }
-
+    
     function updateTagPrice(rowId){
         var prdCodeSelection = $("#sales_voucher_products_tag"+rowId).val();
         if(prdCodeSelection!=''){
             var pid = $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-id');
-            // console.log(pid);
             // Set selected 
             $('#sales_voucher_products_id'+rowId).val(pid);
             $("#sales_voucher_products_qty"+rowId).val('1');
