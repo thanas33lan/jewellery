@@ -54,8 +54,9 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <!-- <a href="< ?php echo $this->url('sales',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Sale</a> -->
+                        <a href="<?php echo $this->url('sales',array('action' => 'index'));?>" style="margin-top:-5px;">Sales Details</a>
                     </li>
+                    <li class="breadcrumb-item active">Add New Sale</li>
                 </ol>
             </nav>
         </div>
@@ -186,7 +187,7 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
                                 <td><select name="sales_voucher_products_id[]" id="sales_voucher_products_id1" class="select2 input-width form-control sales_voucher_products_id isRequired" title="Please enter Product" onchange="checkExistProduct(1,'id')"><option value="">-- Select --</option><?php echo $productLists;?></select></td>
                                 <td><input type="text" class="form-control input-width isRequired" name="sales_voucher_products_qty[]" id="sales_voucher_products_qty1" title="Please enter qty" onkeyup='updateTotalPrice();'/></td>
                                 <td><input type="text" class="form-control input-width" name="sales_voucher_products_weight[]" id="sales_voucher_products_weight1" title="Please enter weight" onkeyup='updateTotalPrice();unitPrice(1);'/></td>
-                                <td><input type="text" class="form-control input-width" name="sales_voucher_products_purity[]" id="sales_voucher_products_purity1" title="Please enter purity" onkeyup='updateTotalPrice();'/></td>
+                                <td><input type="text" class="form-control input-width" value="100" name="sales_voucher_products_purity[]" id="sales_voucher_products_purity1" title="Please enter purity" onkeyup='updateTotalPrice();unitPrice(1);'/></td>
                                 <td><input type="text" class="form-control input-width isRequired" name="sales_voucher_products_wastage[]" id="sales_voucher_products_wastage1" title="Please enter wastage" onkeyup='updateTotalPrice();unitPrice(1);'/></td>
                                 <td><input type="text" class="form-control input-width" name="sales_voucher_products_wastage_weight[]" id="sales_voucher_products_wastage_weight1" title="Please enter wastage weight"/></td>
                                 <td><input type="text" class="form-control input-width isRequired" name="sales_voucher_products_rate[]" id="sales_voucher_products_rate1" title="Please enter rate" onkeyup='updateTotalPrice();'/></td>
@@ -224,6 +225,8 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
     var silverRate = 0;
     var unitPr = 0;
     $(document).ready(function() {
+        $("#page-container").removeClass('sidebar-o');
+        $("#page-container").addClass('sidebar-o-xs');
         $.post("<?php echo $this->url('sales',array('action'=>'price')); ?>",
         function(data){
             var result=data.split('-');
@@ -322,7 +325,7 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
         d.innerHTML = "<select name='sales_voucher_products_id[]' id='sales_voucher_products_id" + tableRowId + "' class='select2 input-width form-control sales_voucher_products_id isRequired' title='Please enter Product' onchange='checkExistProduct(" + tableRowId + ","+id+")'><option value=''>-- Select --</option><?php echo $productLists;?></select>";
         e.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_qty[]' id='sales_voucher_products_qty" + tableRowId + "' title='Please enter qty' onkeyup='updateTotalPrice();'/>";
         f.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_weight[]' id='sales_voucher_products_weight" + tableRowId + "' title='Please enter weight' onkeyup='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
-        g.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_purity[]' id='sales_voucher_products_purity" + tableRowId + "' title='Please enter purity' onkeyup='updateTotalPrice();'/>";
+        g.innerHTML = "<input type='text' class='form-control input-width' value='100' name='sales_voucher_products_purity[]' id='sales_voucher_products_purity" + tableRowId + "' title='Please enter purity' onkeyup='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
         h.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_wastage[]' id='sales_voucher_products_wastage" + tableRowId + "' title='Please enter wastage' onkeyup='updateTotalPrice();unitPrice(" + tableRowId + ");'/>";
         i.innerHTML = "<input type='text' class='form-control input-width' name='sales_voucher_products_wastage_weight[]' id='sales_voucher_products_wastage_weight" + tableRowId + "' title='Please enter wastage weight'/>";
         j.innerHTML = "<input type='text' class='form-control input-width isRequired' name='sales_voucher_products_rate[]' id='sales_voucher_products_rate" + tableRowId + "' title='Please enter rate' onkeyup='updateTotalPrice();'/>";
@@ -373,9 +376,11 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
             if($("#sales_voucher_products_id"+rowId).find(':selected').attr('data-code') == 'gold'){
                 $("#sales_voucher_products_rate"+rowId).val(goldRate);
                 $("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate',goldRate);
+                $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-rate',goldRate);
             }else{
                 $("#sales_voucher_products_rate"+rowId).val(silverRate);
                 $("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate',silverRate);
+                $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-rate',silverRate);
             }
             updateTotalPrice();
         }
@@ -395,9 +400,11 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
             if($("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-code') == 'gold'){
                 $("#sales_voucher_products_rate"+rowId).val(goldRate);
                 $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-rate',goldRate);
+                $("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate',goldRate);
             }else{
                 $("#sales_voucher_products_rate"+rowId).val(silverRate);
                 $("#sales_voucher_products_tag"+rowId).find(':selected').attr('data-rate',silverRate);
+                $("#sales_voucher_products_id"+rowId).find(':selected').attr('data-rate',silverRate);
             }
             updateTotalPrice();
         }
@@ -429,23 +436,22 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
             var lineTotal = 0;
             var grossAmt = 0;
             unitPr = $("#sales_voucher_products_id"+(i+1)).find(':selected').attr('data-rate');
-            
+            var OriginalWeight = (weightRate[i].value * (parseFloat(purity[i].value)/100));
             if(qty[i].value == 0){
                 // alert("Sorry! You can not add ZERO quantity.",'err')
                 qty[i].value = 1;
             }
             // To find unit price
-            var wastageW = ((wastagePrice[i].value / 100) * parseFloat(weightRate[i].value));
+            var wastageW = ((wastagePrice[i].value / 100) * parseFloat(OriginalWeight));
             if(!isNaN(wastageW)){
-                wastageWeight[i].value = parseFloat(wastageW).toFixed(2);
+                wastageWeight[i].value = parseFloat(wastageW).toFixed(4);
             }
-            
             // To find a gross payment
             var addR = additionalPrice[i].value;
-            var wr = parseFloat(weightRate[i].value * unitPr);
-            var aw = parseFloat(weightRate[i].value * addR);
-            var wsr = parseFloat(wastageWeight[i].value * unitPr);
-            grossAmt = parseFloat(wr+aw+wsr);
+            var weightrate = parseFloat(OriginalWeight * unitPr);
+            var addtionalrate = parseFloat((parseFloat(OriginalWeight) + parseFloat(wastageWeight[i].value)) * addR);
+            var wastage = parseFloat(wastageWeight[i].value * unitPr);
+            grossAmt = parseFloat(weightrate+addtionalrate+wastage);
             if(!isNaN(grossAmt)){
                 grossPrice[i].value = parseFloat(grossAmt).toFixed(2);
             }
@@ -461,6 +467,7 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
             
             if(retunCheck[i].value == 'on'){
                 if(purity[i].value != ""){
+                    
                     var returnb = parseFloat(unitPr * purity[i].value);
                     var nta = parseFloat(parseFloat(grossPrice[i].value) - parseFloat(returnb)).toFixed(2);
                     if(!isNaN(nta)){
@@ -487,16 +494,27 @@ $invoiceNo='INV'.$invCodeKey .'/'. $financialYear;;
     }
 
     function unitPrice(i){
-        unitPr = $("#sales_voucher_products_id"+i).find(':selected').attr('data-rate');
+        if($("#sales_voucher_products_id"+i).find(':selected').attr('data-code') == 'gold'){
+            $("#sales_voucher_products_rate"+i).val(goldRate);
+            $("#sales_voucher_products_id"+i).find(':selected').attr('data-rate',goldRate);
+            $("#sales_voucher_products_tag"+i).find(':selected').attr('data-rate',goldRate);
+        }else{
+            $("#sales_voucher_products_rate"+i).val(silverRate);
+            $("#sales_voucher_products_id"+i).find(':selected').attr('data-rate',silverRate);
+            $("#sales_voucher_products_tag"+i).find(':selected').attr('data-rate',silverRate);
+        }
+        unitPriceOriginal = $("#sales_voucher_products_id"+i).find(':selected').attr('data-rate');
         i -=1;
+        var purity = document.getElementsByName("sales_voucher_products_purity[]");
         var unitPrice = document.getElementsByName("sales_voucher_products_rate[]");
         var weightRate = document.getElementsByName("sales_voucher_products_weight[]");
         var wastageWeight = document.getElementsByName("sales_voucher_products_wastage_weight[]");
-        
-        unitPr *= weightRate[i].value;
-        var unitP = unitPr - (unitPr * wastageWeight[i].value);
+        var OriginalWeight = (weightRate[i].value * (parseFloat(purity[i].value)/100));
+        unitPr = unitPriceOriginal * OriginalWeight;
+        var unitP = unitPr + (unitPriceOriginal * wastageWeight[i].value);
         if(!isNaN(unitP)){
-            unitPrice[i].value = parseFloat(unitP).toFixed(2);
+            // unitPrice[i].value = parseFloat(unitP).toFixed(2);
+            unitPrice[i].value = parseFloat(unitPriceOriginal).toFixed(2);
         }
     }
 
