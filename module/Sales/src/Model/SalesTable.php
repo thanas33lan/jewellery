@@ -87,21 +87,6 @@ class SalesTable
             \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
             $output = array();
             $sheet = $excel->getActiveSheet();
-            
-            if(isset($params['searchDate']) && trim($params['searchDate'])!=""){
-                $start_date = '';
-                $end_date = '';
-                
-                $sDate = explode("to",$params['searchDate']);
-                if (isset($sDate[0]) && trim($sDate[0]) != "") {
-                    $start_date = $common->dbDateFormat(trim($sDate[0]));
-                }
-                if (isset($sDate[1]) && trim($sDate[1]) != "") {
-                    $end_date = $common->dbDateFormat(trim($sDate[1]));
-                }
-                $query = $query->where(array("s.invoice_date >='" . $start_date ."'", "s.invoice_date <='" . $end_date."'"));
-            }
-            
             $sResult = $this->tableGateway->selectWith($queryContainer->salesQuery);
             
             if(count($sResult) > 0) {
@@ -345,6 +330,7 @@ class SalesTable
             $row[] = $aRow->sales_grand_total;
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
                         <a class="btn btn-sm btn-hero-dark" onclick="showModal(\'/sales/pay/' .base64_encode($aRow->sales_id) . '\',880,540);" href="javascript:void(0);"><i class="fab fa-amazon-pay"></i></a>
+                        <a class="btn btn-sm btn-primary" href="/sales/print/' . base64_encode($aRow->sales_id) . '"><i class="fa fa-print"></i> Print</a>
                         <a class="btn btn-sm btn-primary" href="/sales/edit/' . base64_encode($aRow->sales_id) . '"><i class="si si-pencil"></i> Edit</a>
                         <a class="btn btn-sm btn-danger" onclick="deleteSales(' . $aRow->sales_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
@@ -352,6 +338,14 @@ class SalesTable
         }
 
         return $output;
+    }
+
+    public function getAccountsSaleDetails($id)
+    {
+        $select = new Select(['s'=>'sales_details']);
+        $select->join(['a'=>'accounts'],'s.sales_voucher_sales_account = a.account_id',['account_name_tamil','account_email','account_mobile','account_address','account_area','account_city','account_pincode']);
+        $select->where(array('s.sales_id'=>(int)$id));
+        return $this->tableGateway->selectWith($select);
     }
     
     public function getSales($id)
@@ -387,8 +381,11 @@ class SalesTable
         ];
         $salesId = (int) $sales->sales_id;
         $alertContainer = new Container('alert');
+        $logincontainer = new Container('user');
         
         if ($salesId === 0) {
+            $data['sales_added_by'] = $logincontainer->userId;
+            $data['sales_added_on'] = $common->getDateTime();
             $inserted = $this->tableGateway->insert($data);
             $lastInsertedId = $this->tableGateway->lastInsertValue;
             if($inserted > 0){

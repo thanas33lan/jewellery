@@ -156,4 +156,14 @@ class SalesController extends AbstractActionController
             return $this->getResponse()->setContent(Json::encode($result));
         }
     }
+
+    public function printAction()
+    {
+        $id = base64_decode($this->params()->fromRoute('id'));
+        $viewModel = new ViewModel([
+            'sales' => $this->table->getAccountsSaleDetails($id),
+            'salesVoucher' => $this->tableVoucher->getSales($id)
+        ]);
+        return $viewModel->setTerminal(true);
+    }
 }

@@ -23,6 +23,8 @@ class SalesVoucherDetails
     public $sales_voucher_products_net_amount;
     public $sales_voucher_products_narration;
     public $return_check;
+    // Product details
+    public $products_name;
 
     public function exchangeArray(array $data)
     {
@@ -44,6 +46,7 @@ class SalesVoucherDetails
         $this->sales_voucher_products_discount_amount   = !empty($data['sales_voucher_products_discount_amount']) ? $data['sales_voucher_products_discount_amount'] : null;
         $this->sales_voucher_products_net_amount        = !empty($data['sales_voucher_products_net_amount']) ? $data['sales_voucher_products_net_amount'] : null;
         $this->sales_voucher_products_narration         = !empty($data['sales_voucher_products_narration']) ? $data['sales_voucher_products_narration'] : null;
-        $this->return_check         = !empty($data['return_check']) ? $data['return_check'] : null;
+        $this->return_check                             = !empty($data['return_check']) ? $data['return_check'] : null;
+        $this->products_name                            = !empty($data['products_name']) ? $data['products_name'] : null;
     }
 }

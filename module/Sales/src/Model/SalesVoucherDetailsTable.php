@@ -20,22 +20,24 @@ class SalesVoucherDetailsTable
     
     public function getSales($id)
     {
-        $salesVoucherId = (int) $id;
+        $select = new Select([ 'svd' => 'sales_voucher_details' ]);
+        $select->join(['p' => 'products'], 'svd.sales_voucher_products_id = p.products_id', ['products_name']);
+        $select->where(['svd.sales_id'=>(int) $id]);
+        $resultSet = $this->tableGateway->selectWith($select);
+        /* $salesVoucherId = (int) $id;
         $rowset = $this->tableGateway->select(['sales_id' => $salesVoucherId]);
         $row = $rowset->getArrayObjectPrototype();
         
         $alertContainer = new Container('alert');
         if (! $row) {
             $alertContainer->alertMsg = 'Sales voucher not found';
-            return 0;
-        }
+            return 0; */
        
-        return $rowset;
+        return $resultSet;
     }
 
     public function saveSales($sales,$lastId)
     {
-        // \Zend\Debug\Debug::dump($sales);die;
         $lastInsertedId = 0;
         $n = count($sales->sales_voucher_products_id);
         for($i=0;$i<$n;$i++){
