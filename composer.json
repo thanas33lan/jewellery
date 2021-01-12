@@ -34,7 +34,12 @@
             "Application\\": "module/Application/src/",
             "Accounts\\": "module/Accounts/src/",
             "Login\\": "module/Login/src/",
-            "User\\": "module/User/src/"
+            "User\\": "module/User/src/",
+            "Products\\": "module/Products/src/",
+            "Vat\\": "module/Vat/src/",
+            "GoldChit\\": "module/GoldChit/src/",
+            "Sales\\": "module/Sales/src/",
+            "Reports\\": "module/Reports/src/"
         }
     },
     "autoload-dev": {

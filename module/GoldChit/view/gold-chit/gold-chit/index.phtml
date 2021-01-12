@@ -1,0 +1,90 @@
+<?php
+    use Zend\Session\Container;
+    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+?>
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Gold Chit Details</h1>
+            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="<?php echo $this->url('gold-chit',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Gold Chit</a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Manage Gold Chit Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content block-content-full">
+            <table id="goldChitDataTable" class="table table-bordered table-striped table-vcenter">
+                <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Name</th>
+                        <th>Remarks</th>
+                        <th>Amount</th>
+                        <th>Bonus</th>
+                        <th>No of Month</th>
+                        <th>Total Amount</th>
+                        <th>Scheme Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="9" class="dataTables_empty">Loading data from server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    /* Table initialisation */
+   oTable = null;
+    $(document).ready(function() {
+        oTable = $('#goldChitDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('gold-chit',array('action' => 'index')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+
+    function deleteUser(id){
+        conf=confirm("Are you sure, you want delete this this gold chit!");
+		if(conf){
+			$.post("<?php echo $this->url('gold-chit',array('action'=>'delete')); ?>",{goldchit_id:id},
+			function(data){
+				if(data>0){
+					oTable.fnDraw();
+					alert("Gold Chit deleted successfully.");
+				}else{
+					alert("Gold Chit not deleted!",'err');
+                }
+			});
+		}
+    }
+</script>

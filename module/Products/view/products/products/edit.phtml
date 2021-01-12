@@ -1,0 +1,139 @@
+<div class="bg-body-light">
+     <div class="content content-full">
+          <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Products</h1>
+               <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                         <a href="<?= $this->url('products', array('action' => 'index')); ?>"><li class="breadcrumb-item">Products Details</li></a>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
+                    </ol>
+               </nav>
+          </div>
+     </div>
+</div>
+
+
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Add Products Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="col-md-12 table-responsive" id="hide">
+                <form name="productsInformation" id="productsInformation"  class="mb-5" action="<?= $this->url('products', array('action' => 'add')); ?>" method="post">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_tag">Code<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_tag;?>" class="form-control isRequired" id="products_tag" name="products_tag" placeholder="Enter the products code" title="Please enter the products code">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_type_id">Select Products Type<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="products_type_id" name="products_type_id" placeholder="Enter the products type" title="Please enter the products type">
+                                <option value="">--select--</option>
+                                <?php foreach($productsType as $type){?>
+                                    <option value="<?php echo $type->products_type_code;?>" <?php echo($products->products_type_id == $type->products_type_code )?'selected="selected"':'';?>><?php echo $type->products_type_name;?></option>
+                                <?php }?>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="products_name">Name<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_name;?>" class="form-control isRequired" id="products_name" name="products_name" placeholder="Enter the products name" title="Please enter the products name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_short_name">Short Name</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_short_name;?>" class="form-control" id="products_short_name" name="products_short_name" placeholder="Enter the short name" title="Please enter the short name">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="products_wastage">Wastage</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_wastage;?>" class="form-control" id="products_wastage" name="products_wastage" placeholder="Enter the wastage" title="Please enter the wastage">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_charge">Charge</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_charge;?>" class="form-control" id="products_charge" name="products_charge" placeholder="Enter the charge" title="Please enter the charge">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="products_rate">Rate</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_rate;?>" class="form-control" id="products_rate" name="products_rate" placeholder="Enter the rate" title="Please enter the rate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_addition_rate_g">Addition Rate/g</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_addition_rate_g;?>" class="form-control" id="products_addition_rate_g" name="products_addition_rate_g" placeholder="Enter the addition Rate/g" title="Please enter the addition Rate/g">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="products_vat">Products Vat</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_vat;?>" class="form-control" id="products_vat" name="products_vat" placeholder="Enter the products vat" title="Please enter the products vat">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_vat_rate">GST Rate</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_vat_rate;?>" class="form-control" id="products_vat_rate" name="products_vat_rate" placeholder="Enter the vat rate" title="Please enter the vat rate">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="products_qty">Quantity</label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo $products->products_qty;?>" class="form-control" id="products_qty" name="products_qty" placeholder="Enter the quantity" title="Please enter the quantity">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="products_status">Status</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" id="products_status" name="products_status" title="Please select the products status">
+                                <option value="active" <?php echo($products->products_status == 'active' )?'selected="selected"':'';?>>Active</option>
+                                <option value="inactive" <?php echo($products->products_status == 'inactive' )?'selected="selected"':'';?>>Inactive</option>
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 col-form-label" for="products_description">Description</label>
+                        <div class="col-sm-4">
+                            <textarea type="text" class="form-control" id="products_description" name="products_description" placeholder="Enter the description" title="Please enter the description"><?php echo $products->products_description;?></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="row items-push">
+                        <input type="hidden" value="<?php echo $products->products_id;?>" name="products_id">
+                        <div class="col-lg-7 offset-lg-4">
+                            <a href="<?= $this->url('products', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
+                            <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    duplicateName = true;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'productsInformation'
+        });
+        if (flag) {
+            if (duplicateName) {
+                $.blockUI();
+                document.getElementById('productsInformation').submit();
+            }
+        }
+    }
+</script>

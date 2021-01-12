@@ -75,15 +75,28 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             'Webmozart\\Assert\\' => 17,
         ),
+        'V' => 
+        array (
+            'Vat\\' => 4,
+        ),
         'U' => 
         array (
             'User\\' => 5,
+        ),
+        'S' => 
+        array (
+            'Sales\\' => 6,
+        ),
+        'R' => 
+        array (
+            'Reports\\' => 8,
         ),
         'P' => 
         array (
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'Products\\' => 9,
         ),
         'L' => 
         array (
@@ -92,6 +105,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'I' => 
         array (
             'Interop\\Container\\' => 18,
+        ),
+        'G' => 
+        array (
+            'GoldChit\\' => 9,
         ),
         'D' => 
         array (
@@ -289,9 +306,21 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             0 => __DIR__ . '/..' . '/webmozart/assert/src',
         ),
+        'Vat\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Vat/src',
+        ),
         'User\\' => 
         array (
             0 => __DIR__ . '/../..' . '/module/User/src',
+        ),
+        'Sales\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Sales/src',
+        ),
+        'Reports\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Reports/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -305,6 +334,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'Products\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/Products/src',
+        ),
         'Login\\' => 
         array (
             0 => __DIR__ . '/../..' . '/module/Login/src',
@@ -312,6 +345,10 @@ class ComposerStaticInite6aea1897b4b0545db6fe67a9ba6aa47
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
+        ),
+        'GoldChit\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/module/GoldChit/src',
         ),
         'Doctrine\\Instantiator\\' => 
         array (

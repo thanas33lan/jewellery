@@ -5,7 +5,7 @@
 <div class="bg-body-light">
     <div class="content content-full">
         <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
-            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">User Details</h1>
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Admin User Details</h1>
             <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
@@ -19,7 +19,10 @@
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            
+            <h3 class="block-title">Manage Admin User Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
         </div>
         <div class="block-content block-content-full">
             <table id="userDataTable" class="table table-bordered table-striped table-vcenter">
@@ -66,4 +69,19 @@
             }
         } );
     } );
+
+    function deleteUser(id){
+        conf=confirm("Are you sure, you want delete this user!");
+		if(conf){
+			$.post("<?php echo $this->url('user',array('action'=>'delete')); ?>",{user_id:id},
+			function(data){
+				if(data>0){
+					oTable.fnDraw();
+					alert("User deleted successfully.");
+				}else{
+					alert("User not deleted!",'err');
+                }
+			});
+		}
+    }
 </script>

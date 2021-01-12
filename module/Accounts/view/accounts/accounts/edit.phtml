@@ -1,8 +1,6 @@
-<?php
-use Zend\Session\Container;
-use Zend\Validator\InArray;
-$sessionLogin = new Container('user');
-// \Zend\Debug\Debug::dump($accounts);die;
+<?php 
+    use Application\Service\CommonService;
+    $common = new CommonService();
 ?>
 <div class="bg-body-light">
      <div class="content content-full">
@@ -11,7 +9,7 @@ $sessionLogin = new Container('user');
                <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
                     <ol class="breadcrumb">
                          <a href="<?= $this->url('accounts', array('action' => 'index')); ?>"><li class="breadcrumb-item">Accounts Details</li></a>
-                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Edit</li>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Add</li>
                     </ol>
                </nav>
           </div>
@@ -22,77 +20,284 @@ $sessionLogin = new Container('user');
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            <h3 class="block-title">Edit Accounts Details</h3>
+            <h3 class="block-title">Add Accounts Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
         </div>
         <div class="block-content">
             <div class="col-md-12 table-responsive" id="hide">
                 <form name="accountsInformation" id="accountsInformation"  class="mb-5" action="<?= $this->url('accounts', array('action' => 'edit')); ?>" method="post">
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="type">Select Account Type<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <select class="form-control isRequired" id="type" name="type" placeholder="Enter the account type" title="Please enter the account type">
-                                <option value="">--select--</option>
-                                <option value="balance-sheet" <?php echo($accounts->account_type == 'balance-sheet' )?'selected="selected"':'';?>>Balance Sheet</option>
-                                <option value="profit-and-loss" <?php echo($accounts->account_type == 'profit-and-loss' )?'selected="selected"':'';?>>Profit and Loss</option>
-                            </select>
-                        </div>
-                        
-                        <label class="col-sm-2 col-form-label" for="name">Account Name<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="text" value="<?php echo $accounts->account_name_tamil;?>" class="form-control isRequired" id="name" name="name" placeholder="Enter the account name" title="Please enter the account name">
+                    <div class="js-wizard-simple block block block-rounded block-bordered">
+                        <ul class="nav nav-tabs nav-tabs-block nav-justified" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="javascript:void(0);" id="step1" onclick="validateStep4()">Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="javascript:void(0);" id="step2" onclick="validateStep1();">Registratiin & Del.Address</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="javascript:void(0);" id="step3" onclick="validateStep2();">General</a>
+                            </li>
+                        </ul>  
+                        <div class="block-content block-content-full tab-content" style="min-height: 300px;">
+                            <div class="tab-pane active" id="wizard-progress-step1" role="tabpanel"> 
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="account_type">Select Account Type</label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control " id="account_type" name="account_type" placeholder="Enter the account type" title="Please enter the account type">
+                                            <option value="">--select--</option>
+                                            <?php foreach($accountType as $type){?>
+                                                <option value="<?php echo $type->account_type_id;?>" <?php echo($accounts->account_type_id == $type->account_type_id )?'selected="selected"':'';?>><?php echo $type->account_type_name;?></option>
+                                            <?php }?>
+                                        </select>
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="account_name_tamil">Account Name</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accounts->account_name_tamil;?>" class="form-control " id="account_name_tamil" name="account_name_tamil" placeholder="Enter the account name" title="Please enter the account name">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="account_email">Email</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accounts->account_email;?>" class="form-control " id="account_email" name="account_email" placeholder="Enter the account email" title="Please enter the account email">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="account_city">City</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accounts->account_city;?>" class="form-control " id="account_city" name="account_city" placeholder="Enter the account city" title="Please enter the account city">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="account_pincode">Pincode</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" value="<?php echo $accounts->account_pincode;?>" class="form-control " id="account_pincode" name="account_pincode" placeholder="Enter the account pincode" title="Please enter the account pincode">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="account_mobile">Mobile</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" value="<?php echo $accounts->account_mobile;?>" class="form-control " id="account_mobile" name="account_mobile" placeholder="Enter the account mobile" title="Please enter the account mobile">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="account_area">Area</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accounts->account_area;?>" class="form-control " id="account_area" name="account_area" placeholder="Enter the account area" title="Please enter the account area">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="account_status">Status</label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control " id="account_status" name="account_status" title="Please select the account status">
+                                            <option value="">--select--</option>
+                                            <option value="active" <?php echo($accounts->account_status == 'active' )?'selected="selected"':'';?>>Active</option>
+                                            <option value="inactive" <?php echo($accounts->account_status == 'inactive' )?'selected="selected"':'';?>>Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="account_address">Address</label>
+                                    <div class="col-sm-4">
+                                        <textarea type="text" class="form-control " id="account_address" name="account_address" placeholder="Enter the account area" title="Please enter the account area"><?php echo $accounts->account_address;?></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="wizard-progress-step2" role="tabpanel">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_tin">TIN No</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_tin;?>" class="form-control register " id="accounts_register_tin" name="accounts_register_tin" placeholder="Enter the TIN No" title="Please enter the TIN No">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_cst">CST No</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_cst;?>" class="form-control register " id="accounts_register_cst" name="accounts_register_cst" placeholder="Enter the CST No" title="Please enter the CST No">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_licence">Licence No</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_licence;?>" class="form-control register " id="accounts_register_licence" name="accounts_register_licence" placeholder="Enter the licence no" title="Please enter the licence no">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_code">Area Code</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_code;?>" class="form-control register " id="accounts_register_code" name="accounts_register_code" placeholder="Enter the area code" title="Please enter the area code">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_gstin">GSTIN/UIN</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_gstin;?>" class="form-control register " id="accounts_register_gstin" name="accounts_register_gstin" placeholder="Enter the GSTIN/UIN" title="Please enter the GSTIN/UIN">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_delivery_name">Delivery Name</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_delivery_name;?>" class="form-control register " id="accounts_register_delivery_name" name="accounts_register_delivery_name" placeholder="Enter the delivery name" title="Please enter the delivery name">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_address">Address</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_address;?>" class="form-control register " id="accounts_register_address" name="accounts_register_address" placeholder="Enter the address" title="Please enter the address">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_area">Area</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_area;?>" class="form-control register " id="accounts_register_area" name="accounts_register_area" placeholder="Enter the area" title="Please enter the area">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_register_city">City</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsRegister->accounts_register_city;?>" class="form-control register " id="accounts_register_city" name="accounts_register_city" placeholder="Enter the city" title="Please enter the city">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="wizard-progress-step3" role="tabpanel">
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_connection_date">Connection Date</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $common->humanDateFormat($accountsGeneral->accounts_general_connection_date);?>" class="js-datepicker form-control" id="accounts_general_connection_date" name="accounts_general_connection_date" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the connection date" title="Please enter the connection date" readonly="readonly">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_connection_type">Connection Type</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_connection_type;?>" class="form-control general " id="accounts_general_connection_type" name="accounts_general_connection_type" placeholder="Enter the connection type" title="Please enter the connection type">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_deposite_amount">Deposite Amount</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" value="<?php echo $accountsGeneral->accounts_general_deposite_amount;?>" class="form-control general " id="accounts_general_deposite_amount" name="accounts_general_deposite_amount" placeholder="Enter the connection date" title="Please enter the connection date">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_rent_amount">Rent Amount</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" value="<?php echo $accountsGeneral->accounts_general_rent_amount;?>" class="form-control general " id="accounts_general_rent_amount" name="accounts_general_rent_amount" placeholder="Enter the connection type" title="Please enter the connection type">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_category">Category</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_category;?>" class="form-control general " id="accounts_general_category" name="accounts_general_category" placeholder="Enter the category" title="Please enter the category">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_work_period">Work Period upto</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_work_period;?>" class="form-control general " id="accounts_general_work_period" name="accounts_general_work_period" placeholder="Enter the work period upto" title="Please enter the work period upto">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_reference">Reference</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_reference;?>" class="form-control general " id="accounts_general_reference" name="accounts_general_reference" placeholder="Enter the reference" title="Please enter the reference">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_sender_id">Sender Id</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_sender_id;?>" class="form-control general " id="accounts_general_sender_id" name="accounts_general_sender_id" placeholder="Enter the sender id" title="Please enter the sender id">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_brand">Brand</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_brand;?>" class="form-control general " id="accounts_general_brand" name="accounts_general_brand" placeholder="Enter the brand" title="Please enter the brand">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_purchase_disc">Purchase Disc Rate</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_purchase_disc;?>" class="form-control general " id="accounts_general_purchase_disc" name="accounts_general_purchase_disc" placeholder="Enter the puchase disc rate" title="Please enter the puchase disc rate">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_sales_disc">Sales Disc Rate</label>
+                                    <div class="col-sm-4">
+                                        <input type="number" value="<?php echo $accountsGeneral->accounts_general_sales_disc;?>" class="form-control general " id="accounts_general_sales_disc" name="accounts_general_sales_disc" placeholder="Enter the sales disc rate" title="Please enter the sales disc rate">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_wage">Wage/ Cooly/ Fees</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_wage;?>" class="form-control general " id="accounts_general_wage" name="accounts_general_wage" placeholder="Enter the wage/ cooly/ fees" title="Please enter the wage/ cooly/ fees">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_price_list">Price List</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_price_list;?>" class="form-control general " id="accounts_general_price_list" name="accounts_general_price_list" placeholder="Enter the price list" title="Please enter the price list">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_overtime">Overtime Wage/ Cooly</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_overtime;?>" class="form-control general " id="accounts_general_overtime" name="accounts_general_overtime" placeholder="Enter the overtime wage/ cooly" title="Please enter the overtime wage/ cooly">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_receipt_charges">Receipt and Charges Grp</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_receipt_charges;?>" class="form-control general " id="accounts_general_receipt_charges" name="accounts_general_receipt_charges" placeholder="Enter the receipt charges" title="Please enter the receipt charges">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_salesman">Salesman</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_salesman;?>" class="form-control general " id="accounts_general_salesman" name="accounts_general_salesman" placeholder="Enter the salesman" title="Please enter the salesman">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_salesman_mobile">Salesman Mobile</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_salesman_mobile;?>" class="form-control general " id="accounts_general_salesman_mobile" name="accounts_general_salesman_mobile" placeholder="Enter the salesman mobile" title="Please enter the salesman mobile">
+                                    </div>
+                                    
+                                    <label class="col-sm-2 col-form-label" for="accounts_general_contact_person">Contact Person</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" value="<?php echo $accountsGeneral->accounts_general_contact_person;?>" class="form-control general " id="accounts_general_contact_person" name="accounts_general_contact_person" placeholder="Enter the contact person" title="Please enter the contact person">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group row">
+                                    <div class="custom-control custom-switch mb-1 pl-4 col-sm-6">
+                                        <input type="checkbox" class="custom-control-input" id="accounts_general_permanent" name="accounts_general_permanent" title="Please select options" <?php echo($accountsGeneral->accounts_general_permanent == 'on' )?'checked':'';?>>
+                                        <label class="custom-control-label" for="accounts_general_permanent">Cable Permanent Disconnection</label>
+                                    </div>
+                                    <div class="custom-control custom-switch mb-1 pl-4 col-sm-6">
+                                        <input type="checkbox" class="custom-control-input" id="accounts_general_warning_outstanding" name="accounts_general_warning_outstanding" title="Please select options" <?php echo($accountsGeneral->accounts_general_warning_outstanding == 'on' )?'checked':'';?>>
+                                        <label class="custom-control-label" for="accounts_general_warning_outstanding">Show Warning for Outstanding above</label>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="custom-control custom-switch mb-1 pl-4 col-sm-6">
+                                        <input type="checkbox" class="custom-control-input" id="accounts_general_invoice_outstanding" name="accounts_general_invoice_outstanding" title="Please select options" <?php echo($accountsGeneral->accounts_general_invoice_outstanding == 'on' )?'checked':'';?>>
+                                        <label class="custom-control-label" for="accounts_general_invoice_outstanding">Looks Sales Invoice when outstanding abobe</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="email">Email<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="text" value="<?php echo $accounts->account_email;?>" class="form-control isRequired" id="email" name="email" placeholder="Enter the account email" title="Please enter the account email">
-                        </div>
-                        
-                        <label class="col-sm-2 col-form-label" for="city">City<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="text" value="<?php echo $accounts->account_city;?>" class="form-control isRequired" id="city" name="city" placeholder="Enter the city" title="Please enter the city">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="pincode">Pincode<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="number" value="<?php echo $accounts->account_pincode;?>" class="form-control isRequired" id="pincode" name="pincode" placeholder="Enter the pincode" title="Please enter the pincode">
-                        </div>
-                        
-                        <label class="col-sm-2 col-form-label" for="mobile">Mobile<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="number" value="<?php echo $accounts->account_mobile;?>" class="form-control isRequired" id="mobile" name="mobile" placeholder="Enter the mobile" title="Please enter the mobile">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="artist">Area<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <input type="text" value="<?php echo $accounts->account_area;?>" class="form-control isRequired" id="area" name="area" placeholder="Enter the area" title="Please enter the area">
-                        </div>
-                        
-                        <label class="col-sm-2 col-form-label" for="accountStatus">Status<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <select class="form-control isRequired" id="accountStatus" name="accountStatus" title="Please select the account status">
-                                <option value="">--select--</option>
-                                <option value="active" <?php echo($accounts->account_status == 'active' )?'selected="selected"':'';?>>Active</option>
-                                <option value="inactive" <?php echo($accounts->account_status == 'inactive' )?'selected="selected"':'';?>>Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                        
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" for="address">Address<span class="mandatory">*</span></label>
-                        <div class="col-sm-4">
-                            <textarea type="text" value="<?php echo $accounts->account_address;?>" class="form-control isRequired" id="address" name="address" placeholder="Enter the address" title="Please enter the address"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="row items-push">
-                        <input type="hidden" value="<?php echo $accounts->account_id;?>" name="accountId">
+                    <input type="hidden" value="<?php echo $accounts->account_id;?>" name="accounts_id">
+                    <input type="hidden" value="<?php echo $accountsRegister->accounts_register_id;?>" name="accounts_register_id">
+                    <input type="hidden" value="<?php echo $accountsGeneral->accounts_general_id;?>" name="accounts_general_id">
+                    <button type="button" class="btn btn-secondary nxtBtn" onclick="validateStep1()" style="float: right;margin-bottom: 15px; ">Registratiin & Del.Address<i class="fa fa-angle-right ml-1"></i></button>
+                    <button type="button" class="btn btn-secondary nxtBtn2" onclick="validateStep2()" style="display:none; float: right;margin-bottom: 15px; ">General<i class="fa fa-angle-right ml-1"></i></button>
+                    <button type="button" class="btn btn-secondary btnHide2" onclick="validateStep3()" style="display:none;"><i class="fa fa-angle-left mr-1"></i>Registratiin & Del.Address</button>
+                    <button type="button" class="btn btn-secondary btnHide" onclick="validateStep4()" style="display:none;"><i class="fa fa-angle-left mr-1"></i>Name</button>
+                    <div class="row items-push submit" style="display:none;">
                         <div class="col-lg-7 offset-lg-4">
                             <a href="<?= $this->url('accounts', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
                             <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
@@ -116,4 +321,52 @@ $sessionLogin = new Container('user');
             }
         }
     }
+
+    function validateStep1()
+    {
+        flag = deforayValidator.init({
+            formId: 'accountsInformation'
+        });
+        $("#step1,#wizard-progress-step1,#step3,#wizard-progress-step3").removeClass("active");
+        $("#step2,#wizard-progress-step2").addClass("active");
+        $(".nxtBtn,.btnHide2,.submit").hide();
+        $(".btnHide,.nxtBtn2").show();
+    }
+
+    function validateStep2()
+    {
+        flag = deforayValidator.init({
+            formId: 'accountsInformation'
+        });
+        $("#step1,#wizard-progress-step1,#step2,#wizard-progress-step2").removeClass("active");
+        $("#step3,#wizard-progress-step3").addClass("active");
+
+        $(".nxtBtn,.nxtBtn2,.btnHide").hide();
+        $(".btnHide2,.submit").show();
+    }
+    
+    function validateStep3()
+    {
+        flag = deforayValidator.init({
+            formId: 'accountsInformation'
+        });
+        $("#step1,#wizard-progress-step1,#step3,#wizard-progress-step3").removeClass("active");
+        $("#step2,#wizard-progress-step2").addClass("active");
+        $(".nxtBtn2,.btnHide,.submit").show();
+        $(".nxtBtn,.btnHide2").hide();
+    }
+    
+    function validateStep4()
+    {
+        flag = deforayValidator.init({
+            formId: 'accountsInformation'
+        });
+        $("#step1,#wizard-progress-step1").addClass("active");
+        $("#step2,#wizard-progress-step2,#step3,#wizard-progress-step3").removeClass("active");
+
+        $(".nxtBtn2,.btnHide,.btnHide2,.submit").hide();
+        $(".nxtBtn").show();
+        
+    }
 </script>
+

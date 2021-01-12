@@ -1,0 +1,133 @@
+<div class="bg-body-light">
+     <div class="content content-full">
+          <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+               <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">User</h1>
+               <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                         <a href="<?= $this->url('user', array('action' => 'index')); ?>"><li class="breadcrumb-item">User Details</li></a>
+                         <li class="breadcrumb-item active" aria-current="page">&nbsp;/ Edit Profile</li>
+                    </ol>
+               </nav>
+          </div>
+     </div>
+</div>
+
+
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Edit Profile Details</h3>
+            <div class="block-options">
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content">
+            <div class="col-md-12 table-responsive" id="hide">
+                <form name="userInformation" id="userInformation"  class="mb-5" action="<?= $this->url('user', array('action' => 'edit')); ?>" method="post">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="role_id">Select Role<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="role_id" name="role_id" title="Please select the role">
+                                <option value="">--select--</option>
+                                <?php foreach($roles as $role){?>
+                                    <option value="<?php echo $role->role_id;?>" <?php echo($user->role_id == $role->role_id )?'selected="selected"':'';?>><?php echo ucwords($role->role_name);?></option>
+                                <?php }?>
+                            </select>
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="name">Name<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control isRequired" value="<?php echo $user->name;?>" id="name" name="name" placeholder="Enter the name" title="Please enter the name">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="username">Email<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control isRequired" value="<?php echo $user->username;?>" id="username" name="username" placeholder="Enter the email" title="Please enter the email">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="password">Password</label>
+                        <div class="col-sm-4">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter the password" title="Please enter the password">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="phone">Mobile<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" value="<?php echo $user->phone;?>" isRequired" id="phone" name="phone" placeholder="Enter the mobile" title="Please enter the mobile">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="city">City<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control isRequired" value="<?php echo $user->city;?>" id="city" name="city" placeholder="Enter the city" title="Please enter the city">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="pincode">Pincode<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control isRequired" value="<?php echo $user->pincode;?>" id="pincode" name="pincode" placeholder="Enter the pincode" title="Please enter the pincode">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="state">Select state<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="state" name="state" title="Please select the state">
+                                <option value="">--select--</option>
+                                <?php foreach($states as $state){?>
+                                    <option value="<?php echo $state->state_id;?>" <?php echo($user->state == $state->state_id )?'selected="selected"':'';?>><?php echo ucwords($state->state_name);?></option>
+                                    <?php }?>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="user_dob">DOB<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" value="<?php echo date('d-M-Y', strtotime($user->user_dob));?>" class="js-datepicker form-control" id="user_dob" name="user_dob" data-week-start="1" data-autoclose="true" data-today-highlight="true" data-date-format="dd-M-yyyy" value="" placeholder="Enter the dob" title="Please enter the dob" readonly="readonly">
+                        </div>
+                        
+                        <label class="col-sm-2 col-form-label" for="user_status">Status<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control isRequired" id="user_status" name="user_status" title="Please select the status">
+                                <option value="">--select--</option>
+                                <option value="active" <?php echo($user->user_status == 'active' )?'selected="selected"':'';?>>Active</option>
+                                <option value="inactive"<?php echo($user->user_status == 'inactive' )?'selected="selected"':'';?>>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" for="address">Address<span class="mandatory">*</span></label>
+                        <div class="col-sm-4">
+                            <textarea type="text" class="form-control isRequired" id="address" name="address" placeholder="Enter the address" title="Please enter the address"><?php echo $user->address;?></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="row items-push">
+                        <input type="hidden" value="<?php echo $user->user_id;?>" name="user_id">
+                        <div class="col-lg-7 offset-lg-4">
+                            <a href="<?= $this->url('user', array('action' => 'index')); ?>" class="btn btn-danger">Cancel</a>&nbsp;
+                            <button type="submit" class="btn btn-primary" onclick="validateNow();return false;"><i class="fa fa-fw fa-check"></i> Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    duplicateName = true;
+    function validateNow() {
+        flag = deforayValidator.init({
+            formId: 'userInformation'
+        });
+        if (flag) {
+            if (duplicateName) {
+                $.blockUI();
+                document.getElementById('userInformation').submit();
+            }
+        }
+    }
+</script>

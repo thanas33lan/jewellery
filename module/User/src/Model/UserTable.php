@@ -93,8 +93,8 @@ class UserTable
         /*
         * Get data to display
         */
-        $select = new Select(array( 'ud' => 'user_details' ));
-        $select->join(array('r' => 'roles'), 'ud.role_id = r.role_id', array('role_name'));
+        $select = new Select([ 'ud' => 'user_details' ]);
+        $select->join(['r' => 'roles'], 'ud.role_id = r.role_id', ['role_name']);
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
         }
@@ -113,12 +113,12 @@ class UserTable
         $select->reset('offset');
         $rowTotal = $this->tableGateway->selectWith($select);
         $iFilteredTotal = count($rowTotal);
-        $output = array(
+        $output = [
                 "sEcho" => intval($parameters['sEcho']),
                 "iTotalRecords" => count($rowTotal),
                 "iTotalDisplayRecords" => $iFilteredTotal,
                 "aaData" => array()
-        );
+        ];
         foreach ($resultSet as $aRow) {
             $row = array();
             $row[] = ucwords($aRow->role_name);
@@ -127,8 +127,8 @@ class UserTable
             $row[] = $aRow->phone;
             $row[] = ucwords($aRow->user_status);
             $row[] ='<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/user/edit/' . base64_encode($aRow->user_id) . '"="><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" href="/user/delete/' . base64_encode($aRow->user_id) . '"="><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/user/edit/' . base64_encode($aRow->user_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteUser(' . $aRow->user_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -136,16 +136,16 @@ class UserTable
         return $output;
     }
     
-    public function getUser($userId)
+    public function getUser($id)
     {
-        $id = (int) $id;
+        $userId = (int) $id;
         $rowset = $this->tableGateway->select(['user_id' => $userId]);
         $row = $rowset->current();
+        
+        $alertContainer = new Container('alert');
         if (! $row) {
-            throw new RuntimeException(sprintf(
-                'Could not find row with identifier %d',
-                $id
-            ));
+            $alertContainer->alertMsg = 'User not found';
+            return 0;
         }
 
         return $row;
@@ -153,44 +153,44 @@ class UserTable
 
     public function saveUser($user)
     {
+        $common = new CommonService();
         $config = new \Zend\Config\Reader\Ini();
         $configResult = $config->fromFile('config/custom.config.ini');
-        $password = sha1($user->password . $configResult["password"]["salt"]);
         $data = [
-            'role_id' => $user->type,
+            'role_id'  => $user->role_id,
             'name'  => $user->name,
-            'username'  => $user->email,
-            'password'  => $user->$password,
+            'username'  => $user->username,
             'phone'  => $user->phone,
-            'user_dob'  => $user->dob,
+            'user_dob'  => $common->dbDateFormat($user->user_dob),
             'state'  => $user->state,
             'city'  => $user->city,
             'address'  => $user->address,
             'pincode'  => $user->pincode,
-            'user_status'  => $user->usertatus,
+            'user_status' => $user->user_status
         ];
-
-        $userId = (int) $user->accountId;
-
+        if(isset($user->password) && trim($user->password) != ''){
+            $password = sha1($user->password . $configResult["password"]["salt"]);
+            $data['password'] = $password;
+        }
+        $userId = (int) $user->user_id;
+        $alertContainer = new Container('alert');
+        
         if ($userId === 0) {
-            $this->tableGateway->insert($data);
+            $inserted = $this->tableGateway->insert($data);
+            if($inserted > 0){
+                $alertContainer->alertMsg = 'User details added successfully';
+            }
             return;
         }
+        $updated = $this->tableGateway->update($data, ['user_id' => $userId]);
 
-        try {
-            $this->getUser($userId);
-        } catch (RuntimeException $e) {
-            throw new RuntimeException(sprintf(
-                'Cannot update User with identifier %d; does not exist',
-                $id
-            ));
+        if($updated > 0){
+            $alertContainer->alertMsg = 'User details updated successfully';
         }
-
-        $this->tableGateway->update($data, ['user_id' => $userId]);
     }
 
-    public function deleteUser($userId)
+    public function deleteUser($params)
     {
-        $this->tableGateway->delete(['user_id' => (int) $userId]);
+        return $this->tableGateway->delete(['user_id' => (int) $params->user_id]);
     }
 }

@@ -48,15 +48,43 @@ class UserController extends AbstractActionController
             return $this->redirect()->toUrl("/user");
         }
         $id = base64_decode($this->params()->fromRoute('id'));
-        return new ViewModel([
-            'user' => $this->table->getUser($id)
-        ]);
+        $checkId = $this->table->getUser($id);
+        if(isset($checkId)){
+            return new ViewModel([
+                'roles' => $this->table->fetchAllRoles(),
+                'states' => $this->table->fetchAllState(),
+                'user' => $this->table->getUser($id)
+            ]);
+        }else{
+            return $this->redirect()->toUrl("/user");
+        }
+    }
+    
+    public function editProfileAction()
+    {
+        $id = base64_decode($this->params()->fromRoute('id'));
+        $checkId = $this->table->getUser($id);
+        if(isset($checkId)){
+            return new ViewModel([
+                'roles' => $this->table->fetchAllRoles(),
+                'states' => $this->table->fetchAllState(),
+                'user' => $this->table->getUser($id)
+            ]);
+        }else{
+            return $this->redirect()->toUrl("/user");
+        }
     }
     
     public function deleteAction()
     {
-        $id = base64_decode($this->params()->fromRoute('id'));
-        $this->table->deleteUser($id);
-        return $this->redirect()->toUrl("/user");
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $params = $request->getPost();
+            $result = $this->table->deleteUser($params);
+            $viewModel = new ViewModel([
+                'result' => $result
+            ]);
+            return $viewModel->setTerminal(true);
+        }
     }
 }

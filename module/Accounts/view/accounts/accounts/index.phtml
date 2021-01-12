@@ -1,6 +1,8 @@
 <?php
     use Zend\Session\Container;
     $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+    $editRegisterAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+    $editGeneralAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
 ?>
 <div class="bg-body-light">
     <div class="content content-full">
@@ -19,27 +21,88 @@
 <div class="content">
     <div class="block block-rounded block-bordered">
         <div class="block-header block-header-default">
-            
-        </div>
-        <div class="block-content block-content-full">
-            <table id="accountsDataTable" class="table table-bordered table-striped table-vcenter">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Name</th>
-                        <th>City</th>
-                        <th>Area</th>
-                        <th>Mobile</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7" class="dataTables_empty">Loading data from server</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="" style=" width: 100%; ">
+                <ul class="nav nav-tabs nav-tabs-block nav-justified" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="javascript:void(0);" id="step1" onclick="validateStep3()"><h3 class="block-title">Manage Name Details</h3></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0);" id="step2" onclick="validateStep1();"><h3 class="block-title">Registratiin & Del.Address</h3></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:void(0);" id="step3" onclick="validateStep2();"><h3 class="block-title">Manage General Details</h3></a>
+                    </li>
+                    <li>
+                        <div class="block-options">
+                            <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+                        </div>
+                    </li>
+                </ul>  
+                <div class="block-content block-content-full tab-content" style="min-height: 300px;">
+                    <div class="tab-pane active" id="wizard-progress-step1" role="tabpanel">
+                        <table id="accountsDataTable" class="table table-bordered table-striped table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th>City</th>
+                                    <th>Area</th>
+                                    <th>Mobile</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="7" class="dataTables_empty">Loading data from server</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="wizard-progress-step2" role="tabpanel">
+                        <table id="accountsRegisterDataTable" class="table table-bordered table-striped table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>TIN NO</th>
+                                    <th>CST NO</th>
+                                    <th>CODE</th>
+                                    <th>GSTIN</th>
+                                    <th>Delivery Name</th>
+                                    <th>Register Address</th>
+                                    <th>Register city</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="dataTables_empty">Loading data from server</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane" id="wizard-progress-step3" role="tabpanel">
+                        <table id="accountsGeneralDataTable" class="table table-bordered table-striped table-vcenter">
+                            <thead>
+                                <tr>
+                                    <th>Connection Date</th>
+                                    <th>Connection Type</th>
+                                    <th>Purchase Disc</th>
+                                    <th>Sales Disc</th>
+                                    <th>Salesman</th>
+                                    <th>Salesman Mobile</th>
+                                    <th>Contact Person</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="dataTables_empty">Loading data from server</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -67,4 +130,109 @@
             }
         } );
     } );
+   oTableRegister = null;
+    $(document).ready(function() {
+        oTableRegister = $('#accountsRegisterDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editRegisterAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('accounts',array('action' => 'register')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+   oTableGeneral = null;
+    $(document).ready(function() {
+        oTableGeneral = $('#accountsGeneralDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editGeneralAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('accounts',array('action' => 'general')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+
+    function deleteAccount(id){
+        conf=confirm("Are you sure, you want delete this account!");
+		if(conf){
+			$.post("<?php echo $this->url('accounts',array('action'=>'delete')); ?>",{account_id:id},
+			function(data){
+				if(data>0){
+					oTable.fnDraw();
+					alert("Account deleted successfully.");
+				}else{
+					alert("Account not deleted!",'err');
+                }
+			});
+		}
+    }
+    
+    function deleteRegisterAccount(id){
+        conf=confirm("Are you sure, you want delete this registered details!");
+		if(conf){
+			$.post("<?php echo $this->url('accounts',array('action'=>'delete-register')); ?>",{accounts_id:id},
+			function(data){
+				if(data>0){
+					oTableRegister.fnDraw();
+					alert("Registered details  deleted successfully.");
+				}else{
+					alert("Registered details not deleted!",'err');
+                }
+			});
+		}
+    }
+    
+    function deleteGeneralAccount(id){
+        conf=confirm("Are you sure, you want delete this general details!");
+		if(conf){
+			$.post("<?php echo $this->url('accounts',array('action'=>'delete-general')); ?>",{accounts_id:id},
+			function(data){
+				if(data>0){
+					oTableGeneral.fnDraw();
+					alert("General details deleted successfully.");
+				}else{
+					alert("General details not deleted!",'err');
+                }
+			});
+		}
+    }
+
+    function validateStep1()
+    {
+        $("#step1,#wizard-progress-step1,#step3,#wizard-progress-step3").removeClass("active");
+        $("#step2,#wizard-progress-step2").addClass("active");
+    }
+
+    function validateStep2()
+    {
+        $("#step1,#wizard-progress-step1,#step2,#wizard-progress-step2").removeClass("active");
+        $("#step3,#wizard-progress-step3").addClass("active");
+    }
+    
+    function validateStep3()
+    {
+        $("#step1,#wizard-progress-step1").addClass("active");
+        $("#step2,#wizard-progress-step2,#step3,#wizard-progress-step3").removeClass("active");
+    }
 </script>

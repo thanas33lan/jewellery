@@ -34,9 +34,13 @@ class UserTable
         $logincontainer->roleId = $row->role_id;
         $logincontainer->name = $row->name;
         $logincontainer->userName = ucwords($row->username);
-        if (isset($logincontainer->userId) && trim($logincontainer->userId) != ''){
-            return '/accounts';
+        if ($row->user_status == 'inactive'){
+            $alertContainer->alertMsg = "You don't have a privillage to access!";
+            return '/login';
+        }else if(isset($logincontainer->userId) && trim($logincontainer->userId) != ''){
+            return '/';
         }else{
+            $alertContainer->alertMsg = 'Your username and password invalid!';
             return '/login';
         }
     }

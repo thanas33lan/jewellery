@@ -1,0 +1,91 @@
+<?php
+    $editAction = ' {"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center"},{"sClass":"center",bSortable:false}';
+?>
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center">
+            <h1 class="flex-sm-fill font-size-h2 font-w400 mt-2 mb-0 mb-sm-2">Sales Details</h1>
+            <nav class="flex-sm-00-auto ml-sm-3" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="<?php echo $this->url('sales',array('action' => 'add'));?>" class="btn btn-primary pull-right" style="margin-top:-5px;"><i class="fa fa-plus"></i>&nbsp;Add New Sales Voucher</a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<div class="content">
+    <div class="block block-rounded block-bordered">
+        <div class="block-header block-header-default">
+            <h3 class="block-title">Manage Sales Details</h3>
+            <div class="block-options">
+                <!-- <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-copy buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Copy</span></button> 
+                <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-excel buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Export Excel</span></button> 
+                <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-csv buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Export CSV</span></button> 
+                <button class="dt-button buttons-csv buttons-html5 btn btn-sm btn-primary buttons-pdf buttons-html5" tabindex="0" aria-controls="example" type="button"><span>Export PDF</span></button>  -->
+                <button type="button" class="btn-block-option" data-toggle="block-option" data-action="fullscreen_toggle"><i class="si si-size-fullscreen"></i></button>
+            </div>
+        </div>
+        <div class="block-content block-content-full">
+            <table id="salesDataTable" class="display table table-bordered table-striped table-vcenter">
+                <thead>
+                    <tr>
+                        <th>Voucher No</th>
+                        <th>Date</th>
+                        <th>Account</th>
+                        <th>Sales Account</th>
+                        <th>Remarks</th>
+                        <th>Grand Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" class="dataTables_empty">Loading data from server</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    /* Table initialisation */
+   oTable = null;
+    $(document).ready(function() {
+        oTable = $('#salesDataTable').dataTable( {
+            "bAutoWidth": false,
+            "bProcessing": true,
+            "bServerSide": true,
+            "aoColumns": [
+                    <?= $editAction;?>
+            ],
+            "sAjaxSource": "<?= $this->url('sales',array('action' => 'index')); ?>",
+            "fnServerData": function ( sSource, aoData, fnCallback ) {
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "POST",
+                    "url": sSource,
+                    "data": aoData,
+                    "success": fnCallback
+                });
+            }
+        } );
+    } );
+
+    function deleteSales(id){
+        conf=confirm("Are you sure, you want delete this Sales!");
+		if(conf){
+			$.post("<?php echo $this->url('sales',array('action'=>'delete')); ?>",{sales_id:id},
+			function(data){
+				if(data>0){
+					oTable.fnDraw();
+					alert("Sales deleted successfully.");
+				}else{
+					alert("Sales not deleted!",'err');
+                }
+			});
+		}
+    }
+</script>

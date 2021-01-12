@@ -16,11 +16,17 @@ class AccountsTable
         $this->tableGateway = $tableGateway;
     }
 
+    public function fetchAllAccountType()
+    {
+        $select = new Select('account_type');
+        return $this->tableGateway->selectWith($select);
+    }
+
     public function fetchAll($parameters)
     {
         // return $this->tableGateway->select();
-        $aColumns = ['account_type','account_name_tamil','account_city_tamil','account_area','account_mobile','account_status'];
-        $orderColumns = ['account_type','account_name_tamil','account_city_tamil','account_area','account_mobile','account_status'];
+        $aColumns = ['account_type_name','account_name_tamil','account_city_tamil','account_area','account_mobile','account_status'];
+        $orderColumns = ['account_type_name','account_name_tamil','account_city_tamil','account_area','account_mobile','account_status'];
         
         /* Paging */
         $sLimit = "";
@@ -82,7 +88,8 @@ class AccountsTable
         /*
         * Get data to display
         */
-        $select = new Select('accounts');
+        $select = new Select(['a'=>'accounts']);
+        $select->join(['at'=>'account_type'],'a.account_type_id = at.account_type_id',['account_type_id','account_type_name']);
         // \Zend\Debug\Debug::dump($select);die;
         if (isset($sWhere) && $sWhere != "") {
                 $select->where($sWhere);
@@ -110,7 +117,7 @@ class AccountsTable
         );
         foreach ($resultSet as $aRow) {
             $row = array();
-            $row[] = ucfirst(str_replace('-', ' ', $aRow->account_type));
+            $row[] = ucfirst($aRow->account_type_name);
             $row[] = ucwords($aRow->account_name_tamil);
             $row[] = ucwords($aRow->account_city);
             $row[] = ucwords($aRow->account_area);
@@ -118,8 +125,8 @@ class AccountsTable
             $row[] = ucwords($aRow->account_status);
             $row[] = 
                     '<div class="btn-group btn-group-sm" role="group" aria-label="Small Horizontal Primary">
-                        <a class="btn btn-primary" href="/accounts/edit/' . base64_encode($aRow->account_id) . '"="><i class="si si-pencil"></i> Edit</a>
-                        <a class="btn btn-danger" href="/accounts/delete/' . base64_encode($aRow->account_id) . '"="><i class="far fa-trash-alt"></i> Delete</a>
+                        <a class="btn btn-primary" href="/accounts/edit/' . base64_encode($aRow->account_id) . '"><i class="si si-pencil"></i> Edit</a>
+                        <a class="btn btn-danger" onclick="deleteAccount(' . $aRow->account_id . ');" href="javascript:void(0);"><i class="far fa-trash-alt"></i> Delete</a>
                     </div>';
             $output['aaData'][] = $row;
         }
@@ -127,16 +134,16 @@ class AccountsTable
         return $output;
     }
     
-    public function getAccounts($accountId)
+    public function getAccounts($id)
     {
-        $id = (int) $id;
+        $accountId = (int) $id;
         $rowset = $this->tableGateway->select(['account_id' => $accountId]);
         $row = $rowset->current();
+        
+        $alertContainer = new Container('alert');
         if (! $row) {
-            throw new RuntimeException(sprintf(
-                'Could not find row with identifier %d',
-                $id
-            ));
+            $alertContainer->alertMsg = 'User not found';
+            return 0;
         }
 
         return $row;
@@ -144,40 +151,36 @@ class AccountsTable
 
     public function saveAccounts($accounts)
     {
+        $accountsRegisterDb = new AccountsRegisterTable($this->tableGateway);
+        $accountsGeneralDb = new AccountsGeneralTable($this->tableGateway);
         $data = [
-            'account_type' => $accounts->type,
-            'account_address'  => $accounts->address,
-            'account_area'  => $accounts->area,
-            'account_city'  => $accounts->city,
-            'account_pincode'  => $accounts->pincode,
-            'account_mobile'  => $accounts->mobile,
-            'account_email'  => $accounts->email,
-            'account_name_tamil'  => $accounts->name,
-            'account_city_tamil'  => $accounts->cityTamil,
-            'account_status'  => $accounts->accountStatus,
+            'account_type_id' => $accounts->account_type,
+            'account_address'  => $accounts->account_address,
+            'account_area'  => $accounts->account_area,
+            'account_city'  => $accounts->account_city,
+            'account_pincode'  => $accounts->account_pincode,
+            'account_mobile'  => $accounts->account_mobile,
+            'account_email'  => $accounts->account_email,
+            'account_name_tamil'  => $accounts->account_name_tamil,
+            'account_city_tamil'  => $accounts->account_city_tamil,
+            'account_status'  => $accounts->account_status,
         ];
-
-        $accountId = (int) $accounts->accountId;
+        $accountId = (int) $accounts->accounts_id;
 
         if ($accountId === 0) {
-            $this->tableGateway->insert($data);
-            return;
+            $inserted = $this->tableGateway->insert($data);
+            $lastInsertedId = $this->tableGateway->lastInsertValue;
+
+            return $lastInsertedId;
         }
 
-        try {
-            $this->getAccounts($accountId);
-        } catch (RuntimeException $e) {
-            throw new RuntimeException(sprintf(
-                'Cannot update Accounts with identifier %d; does not exist',
-                $accountId
-            ));
-        }
-
-        $this->tableGateway->update($data, ['account_id' => $accountId]);
+        $updated = $this->tableGateway->update($data, ['account_id' => $accountId]);
+        
+        return $updated;
     }
 
-    public function deleteAccounts($accountId)
+    public function deleteAccounts($params)
     {
-        $this->tableGateway->delete(['account_id' => (int) $accountId]);
+        return $this->tableGateway->delete(['account_id' => (int) $params->account_id]);
     }
 }
